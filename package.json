@@ -12,14 +12,14 @@
 		"Other"
 	],
 	"activationEvents": [
-        "onCommand:select-between.helloWorld"
+        "onCommand:my-command"
 	],
 	"main": "./dist/extension.js",
 	"contributes": {
 		"commands": [
 			{
-				"command": "select-between.helloWorld",
-				"title": "Hello World"
+				"command": "my-command",
+				"title": "My Command"
 			}
 		]
 	},
