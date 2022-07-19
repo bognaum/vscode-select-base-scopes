@@ -1,29 +1,12 @@
 import * as vsc from 'vscode';
+import syntax from "../describe-syntax";
+import {
+	AreaNode,
+	ParseContext,
+	Quantity,
+	Analyzer,
+} from "../base";
 
-interface Str {
-	type: "Str";
-	at: [number, number];
-	children?: NoStr[];
-}
-
-interface NoStr {
-	type: "NoStr";
-	at: [number, number];
-	children?: Str[];
-}
-
-export default function getStrAreas(text: string): Str[] {
-	const areas: Str[] = [];
-	let quote = "", s = "", i = 0, nextI = 0;
-
-	while (s = text[i = nextI++]) {
-		if (quote) {
-
-		} else {}
-		if (["'", '"', "`"].includes(s)) {
-
-		} else {}
-	}
-
-	return areas;
+export default function getStrAreas(text: string): AreaNode|null {
+	return syntax({text, i: 0});
 }

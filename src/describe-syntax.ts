@@ -5,6 +5,7 @@ import {
 	seq,
 	alt,
 	q,
+	not,
 } from "./describeAPI";
 
 const 
@@ -12,22 +13,40 @@ const
 	string = domain("string", alt(
 		seq(
 			token("'"),
-			q("*", alt(nToken("'"), slashed)),
+			alt(nToken("'"), slashed).q("*"),
 			token("'"),
 		),
 		seq(
 			token('"'),
-			q("*", alt(nToken('"'), slashed)),
+			alt(nToken('"'), slashed).q("*"),
 			token('"'),
 		),
 		seq(
 			token('`'),
-			q("*", alt(nToken('`'), slashed)),
+			alt(nToken('`'), slashed).q("*"),
 			token('`'),
 		)
 	)),
 	commentLine = seq(
 		token("//"), 
-		q("*", nToken("\n")), 
+		nToken("\n").q("*"), 
 		token("\n")
-	);
+	),
+	commentBlock = seq(
+		token("/*"),
+		nToken("*/").q("*"),
+		token("*/")
+	),
+	comment = domain("comment", alt(commentLine, commentBlock)),
+	main = alt(
+		string,
+		comment,
+		not(
+			alt(
+				string,
+				comment,
+			)
+		).named("default")
+	).q("*").named("default");
+
+export default main;
