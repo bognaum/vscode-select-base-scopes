@@ -220,7 +220,7 @@ function q (q: Quantity, x: Analyzer, y: Analyzer|null =null): Analyzer {
 			results: AreaNode[] = [],
 			xpc = {...pc},
 			i0 = pc.i;
-		let res = an1(pc);
+		let res = an1(xpc);
 		if (res) {
 			results.push(res);
 			let res2: AreaNode|null;
@@ -229,6 +229,7 @@ function q (q: Quantity, x: Analyzer, y: Analyzer|null =null): Analyzer {
 				results.push(res);
 			}
 		} else {}
+		pc.i = xpc.i;
 		return [results, [i0, xpc.i]];
 	}
 }
