@@ -34,5 +34,6 @@ interface Analyzer {
 	(pc: ParseContext): AreaNode|null;
 	q: (x: Quantity) => Analyzer;
 	named: (x: string) => Analyzer;
+	merged: (x?: string) => Analyzer;
 }
 

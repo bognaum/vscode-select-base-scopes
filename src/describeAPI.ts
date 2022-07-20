@@ -13,6 +13,7 @@ export {
 	alt,
 	q,
 	not,
+	merge,
 };
 
 const analyzerMethods = {
@@ -22,7 +23,20 @@ const analyzerMethods = {
 	named: function (this: Analyzer, name: string): Analyzer {
 		return domain(name, this);
 	},
+	merged: function (this: Analyzer, name: string =""): Analyzer {
+		return merge(this, name);
+	},
 };
+
+
+function tokens(...patterns: (string|RegExp)[]): Analyzer  {
+	return merge(q("+", token(...patterns)));
+}
+
+function nTokens(...patterns: (string|RegExp)[]): Analyzer  {
+	return merge(q("+", nToken(...patterns)));
+}
+
 
 function token (...patterns: (string|RegExp)[]): Analyzer 
 {
@@ -70,6 +84,27 @@ function token (...patterns: (string|RegExp)[]): Analyzer
 				}
 			}
 			return null;
+		},
+		analyzerMethods
+	);
+}
+
+function merge(an: Analyzer, name: string =""): Analyzer  {
+	return Object.assign(
+		function _nTokens_(pc: ParseContext): AreaNode|null {
+			const 
+				i0 = pc.i,
+				res = an(pc);
+			if (res) {
+				return {
+					name,
+					at: [i0, pc.i],
+					get text() {return pc.text.slice(...this.at);},
+					ch: []
+				};
+			} else {
+				return null;
+			}
 		},
 		analyzerMethods
 	);

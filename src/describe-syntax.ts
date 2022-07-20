@@ -13,28 +13,28 @@ const
 	string = domain("string", alt(
 		seq(
 			token("'"),
-			alt(nToken("'"), slashed).q("*"),
+			alt(nToken("'"), slashed).q("*").merged(),
 			token("'"),
 		),
 		seq(
 			token('"'),
-			alt(nToken('"'), slashed).q("*"),
+			alt(nToken('"'), slashed).q("*").merged(),
 			token('"'),
 		),
 		seq(
 			token('`'),
-			alt(nToken('`'), slashed).q("*"),
+			alt(nToken('`'), slashed).q("*").merged(),
 			token('`'),
 		)
 	)),
 	commentLine = seq(
 		token("//"), 
-		nToken("\n").q("*"), 
+		nToken("\n").q("*").merged(), 
 		token("\n")
 	),
 	commentBlock = seq(
 		token("/*"),
-		nToken("*/").q("*"),
+		nToken("*/").q("*").merged(),
 		token("*/")
 	),
 	comment = domain("comment", alt(commentLine, commentBlock)),
