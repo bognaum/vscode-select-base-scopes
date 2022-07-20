@@ -48,6 +48,7 @@ function token (...patterns: (string|RegExp)[]): Analyzer
 			checkers[k] = (pc: ParseContext) => {
 				if (pc.text.startsWith(pattern, pc.i)) {
 					return {
+						__: `token(${patterns.map(v => "'"+v.toString()+"'").join(", ")}); ='${pattern}'`,
 						at: [pc.i, pc.i += len], 
 						get text() {return pc.text.slice(...this.at);},
 						ch: []
@@ -62,6 +63,7 @@ function token (...patterns: (string|RegExp)[]): Analyzer
 				const m = pc.text.match(pattern);
 				if (m) {
 					return {
+						__: `token(${patterns.map(v => "'"+v.toString()+"'").join(", ")}); ='${pattern}'`,
 						at: [pc.i, pc.i = pattern.lastIndex], 
 						get text() {return pc.text.slice(...this.at);},
 						ch: []
@@ -78,7 +80,7 @@ function token (...patterns: (string|RegExp)[]): Analyzer
 	return Object.assign(
 		function _token_(pc: ParseContext): AreaNode|null {
 			for (const checker of checkers) {
-				const m = checker(pc)
+				const m = checker(pc);
 				if (m) {
 					return m;
 				}
@@ -97,6 +99,7 @@ function merge(an: Analyzer, name: string =""): Analyzer  {
 				res = an(pc);
 			if (res) {
 				return {
+					__: `merge(${name? "'"+name+"'" : ""})`,
 					name,
 					at: [i0, pc.i],
 					get text() {return pc.text.slice(...this.at);},
@@ -136,6 +139,7 @@ function nToken (...patterns: (string|RegExp)[]): Analyzer
 				}
 			}
 			return {
+				__: `nToken(${patterns.map(v => "'"+v.toString()+"'").join(", ")})`,
 				at: [pc.i, pc.i += 1], 
 				get text() {return pc.text.slice(...this.at);},
 				ch: [],
@@ -153,6 +157,7 @@ function domain (name: string, x: Analyzer): Analyzer
 			const node = x(pc);
 			if (node) {
 				return {
+					__: `domain('${name}')`,
 					name,
 					at: [...node.at],
 					get text() {return pc.text.slice(...this.at);},
@@ -186,6 +191,7 @@ function seq (...args: Analyzer[]): Analyzer  {
 			if (ok) {
 				pc.i = xpc.i;
 				return {
+					__: `seq(${args.length})`,
 					at: [i0, xpc.i],
 					get text() {return pc.text.slice(...this.at);},
 					ch: results,
@@ -200,7 +206,7 @@ function seq (...args: Analyzer[]): Analyzer  {
 function alt (...args: Analyzer[]): Analyzer  {
 	return Object.assign(
 		function (pc: ParseContext): AreaNode|null {
-			for (const analyzer of args) {
+			for (const [k, analyzer] of args.entries()) {
 				const 
 					xpc = {...pc},
 					i0 = pc.i,
@@ -208,6 +214,7 @@ function alt (...args: Analyzer[]): Analyzer  {
 				if (res) {
 					pc.i = xpc.i;
 					return {
+						__: `alt(${args.length}) =${k + 1}`,
 						at: [...res.at],
 						get text() {return pc.text.slice(...this.at);},
 						ch: [res],
@@ -226,6 +233,7 @@ function q (q: Quantity, x: Analyzer, y: Analyzer|null =null): Analyzer {
 				const res = x(pc);
 				if (res) {
 					return {
+						__: `q('?')`,
 						at: [...res.at], 
 						get text() {return pc.text.slice(...this.at);},
 						ch: [res],
@@ -246,6 +254,7 @@ function q (q: Quantity, x: Analyzer, y: Analyzer|null =null): Analyzer {
 				const [results, at] = many(x, pc);
 				if (results.length) {
 					return {
+						__: `q('+'); =${results.length}`,
 						at, 
 						get text() {return pc.text.slice(...this.at);},
 						ch: results
@@ -261,6 +270,7 @@ function q (q: Quantity, x: Analyzer, y: Analyzer|null =null): Analyzer {
 			function _zero_or_many_(pc: ParseContext): AreaNode|null {
 				const [results, at] = many(x, pc);
 				return {
+					__: `q('*'); =${results.length}`,
 					at, 
 					get text() {return pc.text.slice(...this.at);},
 					ch: results
@@ -275,6 +285,7 @@ function q (q: Quantity, x: Analyzer, y: Analyzer|null =null): Analyzer {
 					const [results, at] = manySep(x, pc, y);
 					if (results.length) {
 						return {
+							__: `q('+/'); =${results.length}`,
 							at, 
 							get text() {return pc.text.slice(...this.at);},
 							ch: results
@@ -295,6 +306,7 @@ function q (q: Quantity, x: Analyzer, y: Analyzer|null =null): Analyzer {
 				function _zero_or_many_separate_(pc: ParseContext): AreaNode|null {
 					const [results, at] = manySep(x, pc, y);
 					return {
+						__: `q('*/'); =${results.length}`,
 						at, 
 						get text() {return pc.text.slice(...this.at);},
 						ch: results
@@ -355,6 +367,7 @@ function not(x: Analyzer): Analyzer {
 			} else {
 				pc.i++;
 				return {
+					__: `not()`,
 					at: [pc.i - 1, pc.i],
 					get text() {return pc.text.slice(...this.at);},
 					ch: [],
