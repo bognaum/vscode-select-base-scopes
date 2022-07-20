@@ -3,7 +3,7 @@ import {
 	ParseContext,
 	Quantity,
 	Analyzer,
-} from "./base";
+} from "./types-interfaces";
 
 export {
 	token,

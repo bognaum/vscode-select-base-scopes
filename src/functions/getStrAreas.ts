@@ -5,7 +5,7 @@ import {
 	ParseContext,
 	Quantity,
 	Analyzer,
-} from "../base";
+} from "../types-interfaces";
 
 export default function getStrAreas(text: string): AreaNode|null {
 	return syntax({text, i: 0});
