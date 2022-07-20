@@ -34,6 +34,7 @@ function token (pattern: string|RegExp): Analyzer
 				if (pc.text.startsWith(pattern, pc.i)) {
 					return {
 						at: [pc.i, pc.i += len], 
+						get text() {return pc.text.slice(...this.at);},
 						ch: []
 					};
 				} else {
@@ -51,6 +52,7 @@ function token (pattern: string|RegExp): Analyzer
 				if (m) {
 					return {
 						at: [pc.i, pc.i = pattern.lastIndex], 
+						get text() {return pc.text.slice(...this.at);},
 						ch: []
 					};
 				} else {
@@ -77,6 +79,7 @@ function nToken (pattern: string|RegExp): Analyzer
 				} else {
 					return {
 						at: [pc.i, pc.i += 1], 
+						get text() {return pc.text.slice(...this.at);},
 						ch: []
 					};
 				}
@@ -94,6 +97,7 @@ function nToken (pattern: string|RegExp): Analyzer
 				} else {
 					return {
 						at: [pc.i, pc.i += 1], 
+						get text() {return pc.text.slice(...this.at);},
 						ch: []
 					};
 				}
@@ -117,6 +121,7 @@ function domain (name: string, x: Analyzer): Analyzer
 				return {
 					name,
 					at: [...node.at],
+					get text() {return pc.text.slice(...this.at);},
 					ch: [node],
 				};
 			} else {
@@ -148,6 +153,7 @@ function seq (...args: Analyzer[]): Analyzer  {
 				pc.i = xpc.i;
 				return {
 					at: [i0, xpc.i],
+					get text() {return pc.text.slice(...this.at);},
 					ch: results,
 				};
 			} else {
@@ -169,6 +175,7 @@ function alt (...args: Analyzer[]): Analyzer  {
 					pc.i = xpc.i;
 					return {
 						at: [...res.at],
+						get text() {return pc.text.slice(...this.at);},
 						ch: [res],
 					};
 				} else {}
@@ -184,9 +191,17 @@ function q (q: Quantity, x: Analyzer, y: Analyzer|null =null): Analyzer {
 			function _zero_or_one_(pc: ParseContext): AreaNode {
 				const res = x(pc);
 				if (res) {
-					return {at: [...res.at], ch: [res],};
+					return {
+						at: [...res.at], 
+						get text() {return pc.text.slice(...this.at);},
+						ch: [res],
+					};
 				} else {
-					return {at: [pc.i, pc.i], ch: [],};
+					return {
+						at: [pc.i, pc.i], 
+						get text() {return pc.text.slice(...this.at);},
+						ch: [],
+					};
 				}
 			},
 			analyzerMethods
@@ -196,7 +211,11 @@ function q (q: Quantity, x: Analyzer, y: Analyzer|null =null): Analyzer {
 			function _one_or_many_(pc: ParseContext): AreaNode|null {
 				const [results, at] = many(x, pc);
 				if (results.length) {
-					return {at, ch: results};
+					return {
+						at, 
+						get text() {return pc.text.slice(...this.at);},
+						ch: results
+					};
 				} else {
 					return null;
 				}
@@ -207,7 +226,11 @@ function q (q: Quantity, x: Analyzer, y: Analyzer|null =null): Analyzer {
 		return Object.assign(
 			function _zero_or_many_(pc: ParseContext): AreaNode|null {
 				const [results, at] = many(x, pc);
-				return {at, ch: results};
+				return {
+					at, 
+					get text() {return pc.text.slice(...this.at);},
+					ch: results
+				};
 			},
 			analyzerMethods
 		);
@@ -217,7 +240,11 @@ function q (q: Quantity, x: Analyzer, y: Analyzer|null =null): Analyzer {
 				function _one_or_many_separate_(pc: ParseContext): AreaNode|null {
 					const [results, at] = manySep(x, pc, y);
 					if (results.length) {
-						return {at, ch: results};
+						return {
+							at, 
+							get text() {return pc.text.slice(...this.at);},
+							ch: results
+						};
 					} else {
 						return null;
 					}
@@ -233,7 +260,11 @@ function q (q: Quantity, x: Analyzer, y: Analyzer|null =null): Analyzer {
 			return Object.assign(
 				function _zero_or_many_separate_(pc: ParseContext): AreaNode|null {
 					const [results, at] = manySep(x, pc, y);
-					return {at, ch: results};
+					return {
+						at, 
+						get text() {return pc.text.slice(...this.at);},
+						ch: results
+					};
 				},
 				analyzerMethods
 			);
@@ -291,6 +322,7 @@ function not(x: Analyzer): Analyzer {
 				pc.i++;
 				return {
 					at: [pc.i - 1, pc.i],
+					get text() {return pc.text.slice(...this.at);},
 					ch: [],
 				};
 			}
