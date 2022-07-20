@@ -24,13 +24,14 @@ const analyzerMethods = {
 	},
 };
 
-function token (pattern: string|RegExp): Analyzer 
+function token (...patterns: (string|RegExp)[]): Analyzer 
 {
-	if (typeof pattern === "string") {
-		const len = pattern.length;
-		return Object.assign(
-			function _token_(pc: ParseContext): AreaNode|null 
-			{
+	const checkers: ((pc: ParseContext) => AreaNode|null)[] = [];
+	
+	for (const [k, pattern] of patterns.entries()) {
+		if (typeof pattern === "string") {
+			const len = pattern.length;
+			checkers[k] = (pc: ParseContext) => {
 				if (pc.text.startsWith(pattern, pc.i)) {
 					return {
 						at: [pc.i, pc.i += len], 
@@ -40,13 +41,9 @@ function token (pattern: string|RegExp): Analyzer
 				} else {
 					return null;
 				}
-			},
-			analyzerMethods
-		);
-	} else if (pattern instanceof RegExp) {
-		return Object.assign(
-			function _token_(pc: ParseContext): AreaNode|null 
-			{
+			};
+		} else if (pattern instanceof RegExp) {
+			checkers[k] = (pc: ParseContext) => {
 				pattern.lastIndex = pc.i;
 				const m = pc.text.match(pattern);
 				if (m) {
@@ -58,57 +55,59 @@ function token (pattern: string|RegExp): Analyzer
 				} else {
 					return null;
 				}
-			},
-			analyzerMethods
-		);
-	} else {
-		console.error(`(!)`, `Invalid argument to 'token', pattern`);
-		return Object.assign((pc: ParseContext) => null, analyzerMethods);
+			};
+		} else {
+			console.error(`(!)`, `Invalid argument ${k + 1} to 'nToken', pattern`);
+			checkers[k] = (pc: ParseContext) => null;
+		}
 	}
-	
+	return Object.assign(
+		function _token_(pc: ParseContext): AreaNode|null {
+			for (const checker of checkers) {
+				const m = checker(pc)
+				if (m) {
+					return m;
+				}
+			}
+			return null;
+		},
+		analyzerMethods
+	);
 }
 
-function nToken (pattern: string|RegExp): Analyzer 
+function nToken (...patterns: (string|RegExp)[]): Analyzer 
 {
-	if (typeof pattern === "string") {
-		return Object.assign(
-			function _token_(pc: ParseContext): AreaNode|null 
-			{
-				if (pc.text.startsWith(pattern, pc.i)) {
-					return null;
-				} else {
-					return {
-						at: [pc.i, pc.i += 1], 
-						get text() {return pc.text.slice(...this.at);},
-						ch: []
-					};
-				}
-			},
-			analyzerMethods
-		);
-	} else if (pattern instanceof RegExp) {
-		return Object.assign(
-			function _token_(pc: ParseContext): AreaNode|null 
-			{
+	const checkers: ((pc: ParseContext) => boolean)[] = [];
+
+	for (const [k, pattern] of patterns.entries()) {
+		if (typeof pattern === "string") {
+			checkers[k] = (pc: ParseContext) => pc.text.startsWith(pattern, pc.i);
+		// } else if (typeof pattern === "number") {
+		} else if (pattern instanceof RegExp) {
+			checkers[k] = (pc: ParseContext) => {
 				pattern.lastIndex = pc.i;
-				const m = pc.text.match(pattern);
-				if (m) {
-					return null;
-				} else {
-					return {
-						at: [pc.i, pc.i += 1], 
-						get text() {return pc.text.slice(...this.at);},
-						ch: []
-					};
-				}
-			},
-			analyzerMethods
-		);
-	} else {
-		console.error(`(!)`, `Invalid argument to 'nToken', pattern`);
-		return Object.assign((pc: ParseContext) => null, analyzerMethods);
+				return !!pc.text.match(pattern);
+			};
+		} else {
+			console.error(`(!)`, `Invalid argument ${k + 1} to 'nToken', pattern`);
+			checkers[k] = (pc: ParseContext) => false;
+		}
 	}
-	
+	return Object.assign(
+		function _token_(pc: ParseContext): AreaNode|null {
+			for (const checker of checkers) {
+				if (checker(pc)) {
+					return null;
+				}
+			}
+			return {
+				at: [pc.i, pc.i += 1], 
+				get text() {return pc.text.slice(...this.at);},
+				ch: [],
+			};
+		},
+		analyzerMethods
+	);
 }
 
 function domain (name: string, x: Analyzer): Analyzer
