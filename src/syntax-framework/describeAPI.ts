@@ -28,7 +28,6 @@ const analyzerMethods = {
 	},
 };
 
-
 function tokens(...patterns: (string|RegExp)[]): Analyzer  {
 	return merge(q("+", token(...patterns)));
 }
@@ -93,7 +92,7 @@ function token (...patterns: (string|RegExp)[]): Analyzer
 
 function merge(an: Analyzer, name: string =""): Analyzer  {
 	return Object.assign(
-		function _nTokens_(pc: ParseContext): AreaNode|null {
+		function _merge_(pc: ParseContext): AreaNode|null {
 			const 
 				i0 = pc.i,
 				res = an(pc);
@@ -132,7 +131,7 @@ function nToken (...patterns: (string|RegExp)[]): Analyzer
 		}
 	}
 	return Object.assign(
-		function _token_(pc: ParseContext): AreaNode|null {
+		function _nToken_(pc: ParseContext): AreaNode|null {
 			for (const checker of checkers) {
 				if (checker(pc)) {
 					return null;
@@ -173,7 +172,7 @@ function domain (name: string, x: Analyzer): Analyzer
 
 function seq (...args: Analyzer[]): Analyzer  {
 	return Object.assign(
-		function (pc: ParseContext): AreaNode|null {
+		function _seq_(pc: ParseContext): AreaNode|null {
 			const 
 				xpc = {...pc},
 				i0 = pc.i,
@@ -205,7 +204,7 @@ function seq (...args: Analyzer[]): Analyzer  {
 }
 function alt (...args: Analyzer[]): Analyzer  {
 	return Object.assign(
-		function (pc: ParseContext): AreaNode|null {
+		function _alt_(pc: ParseContext): AreaNode|null {
 			for (const [k, analyzer] of args.entries()) {
 				const 
 					xpc = {...pc},
@@ -229,7 +228,7 @@ function alt (...args: Analyzer[]): Analyzer  {
 function q (q: Quantity, x: Analyzer, y: Analyzer|null =null): Analyzer {
 	if (q === "?" ) {
 		return Object.assign(
-			function _zero_or_one_(pc: ParseContext): AreaNode {
+			function _zeroOrOne_(pc: ParseContext): AreaNode {
 				const res = x(pc);
 				if (res) {
 					return {
@@ -250,8 +249,8 @@ function q (q: Quantity, x: Analyzer, y: Analyzer|null =null): Analyzer {
 		);
 	} else if (q === "+" ) {
 		return Object.assign(
-			function _one_or_many_(pc: ParseContext): AreaNode|null {
-				const [results, at] = many(x, pc);
+			function _oneOrMany_(pc: ParseContext): AreaNode|null {
+				const [results, at] = _many(x, pc);
 				if (results.length) {
 					return {
 						__: `q('+'); =${results.length}`,
@@ -267,8 +266,8 @@ function q (q: Quantity, x: Analyzer, y: Analyzer|null =null): Analyzer {
 		);
 	} else if (q === "*" ) {
 		return Object.assign(
-			function _zero_or_many_(pc: ParseContext): AreaNode|null {
-				const [results, at] = many(x, pc);
+			function _zeroOrMany_(pc: ParseContext): AreaNode|null {
+				const [results, at] = _many(x, pc);
 				return {
 					__: `q('*'); =${results.length}`,
 					at, 
@@ -281,8 +280,8 @@ function q (q: Quantity, x: Analyzer, y: Analyzer|null =null): Analyzer {
 	} else if (q === "+/") {
 		if (y) {
 			return Object.assign(
-				function _one_or_many_separate_(pc: ParseContext): AreaNode|null {
-					const [results, at] = manySep(x, pc, y);
+				function _oneOrManySeparate_(pc: ParseContext): AreaNode|null {
+					const [results, at] = _manySep(x, pc, y);
 					if (results.length) {
 						return {
 							__: `q('+/'); =${results.length}`,
@@ -303,8 +302,8 @@ function q (q: Quantity, x: Analyzer, y: Analyzer|null =null): Analyzer {
 	} else if (q === "*/") {
 		if (y) {
 			return Object.assign(
-				function _zero_or_many_separate_(pc: ParseContext): AreaNode|null {
-					const [results, at] = manySep(x, pc, y);
+				function _zeroOrManySeparate_(pc: ParseContext): AreaNode|null {
+					const [results, at] = _manySep(x, pc, y);
 					return {
 						__: `q('*/'); =${results.length}`,
 						at, 
@@ -323,7 +322,7 @@ function q (q: Quantity, x: Analyzer, y: Analyzer|null =null): Analyzer {
 		return Object.assign((pc: ParseContext) => null, analyzerMethods);
 	}
 
-	function many(an: Analyzer, pc: ParseContext)
+	function _many(an: Analyzer, pc: ParseContext)
 	: [AreaNode[], [number, number]] 
 	{
 		const 
@@ -336,7 +335,7 @@ function q (q: Quantity, x: Analyzer, y: Analyzer|null =null): Analyzer {
 		return [results, [i0, pc.i]];
 	}
 
-	function manySep(an1: Analyzer, pc: ParseContext, an2: Analyzer)
+	function _manySep(an1: Analyzer, pc: ParseContext, an2: Analyzer)
 	: [AreaNode[], [number, number]] 
 	{
 		const 
@@ -358,7 +357,7 @@ function q (q: Quantity, x: Analyzer, y: Analyzer|null =null): Analyzer {
 }
 function not(x: Analyzer): Analyzer {
 	return Object.assign(
-		function _offset_(pc: ParseContext): AreaNode|null {
+		function _not_(pc: ParseContext): AreaNode|null {
 			const 
 				xpc = {...pc},
 				res = x(xpc);
