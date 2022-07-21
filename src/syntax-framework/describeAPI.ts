@@ -331,6 +331,9 @@ function q (q: Quantity, x: Analyzer, y: Analyzer|null =null): Analyzer {
 		let res: AreaNode|null;
 		while ((pc.text[pc.i]) && (res = an(pc))) {
 			results.push(res);
+			if (_len(res) <= 0) {
+				break;
+			}
 		}
 		return [results, [i0, pc.i]];
 	}
@@ -349,10 +352,17 @@ function q (q: Quantity, x: Analyzer, y: Analyzer|null =null): Analyzer {
 			while ((pc.text[pc.i]) && (res2 = an2(xpc)) && (res = an1(xpc))) {
 				results.push(res2);
 				results.push(res);
+				if (_len(res) <= 0 && _len(res2) <= 0) {
+					break;
+				}
 			}
 		} else {}
 		pc.i = xpc.i;
 		return [results, [i0, xpc.i]];
+	}
+	function _len(node: AreaNode): number {
+		const len = node.at[1] - node.at[0];
+		return len;
 	}
 }
 function not(x: Analyzer): Analyzer {
