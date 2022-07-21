@@ -1,5 +1,6 @@
 import {
 	AreaNode,
+	Node,
 	ParseContext,
 	Quantity,
 	Analyzer,
@@ -39,19 +40,21 @@ function nTokens(...patterns: (string|RegExp)[]): Analyzer  {
 
 function token (...patterns: (string|RegExp)[]): Analyzer 
 {
-	const checkers: ((pc: ParseContext) => AreaNode|null)[] = [];
+	const checkers: ((pc: ParseContext) => Node|null)[] = [];
 	
 	for (const [k, pattern] of patterns.entries()) {
 		if (typeof pattern === "string") {
 			const len = pattern.length;
 			checkers[k] = (pc: ParseContext) => {
 				if (pc.text.startsWith(pattern, pc.i)) {
-					return {
-						__: `token(${patterns.map(v => "'"+v.toString()+"'").join(", ")}); ='${pattern}'`,
-						at: [pc.i, pc.i += len], 
-						get text() {return pc.text.slice(...this.at);},
-						ch: []
-					};
+					return new Node(
+						pc,
+						{
+							__: `token(${patterns.map(v => "'"+v.toString()+"'").join(", ")}); ='${pattern}'`,
+							at: [pc.i, pc.i += len], 
+							ch: []
+						}
+					);
 				} else {
 					return null;
 				}
@@ -61,12 +64,14 @@ function token (...patterns: (string|RegExp)[]): Analyzer
 				pattern.lastIndex = pc.i;
 				const m = pc.text.match(pattern);
 				if (m) {
-					return {
-						__: `token(${patterns.map(v => "'"+v.toString()+"'").join(", ")}); ='${pattern}'`,
-						at: [pc.i, pc.i = pattern.lastIndex], 
-						get text() {return pc.text.slice(...this.at);},
-						ch: []
-					};
+					return new Node(
+						pc,
+						{
+							__: `token(${patterns.map(v => "'"+v.toString()+"'").join(", ")}); ='${pattern}'`,
+							at: [pc.i, pc.i = pattern.lastIndex], 
+							ch: []
+						}
+					);
 				} else {
 					return null;
 				}
@@ -77,7 +82,7 @@ function token (...patterns: (string|RegExp)[]): Analyzer
 		}
 	}
 	return Object.assign(
-		function _token_(pc: ParseContext): AreaNode|null {
+		function _token_(pc: ParseContext): Node|null {
 			for (const checker of checkers) {
 				const m = checker(pc);
 				if (m) {
@@ -92,18 +97,20 @@ function token (...patterns: (string|RegExp)[]): Analyzer
 
 function merge(an: Analyzer, name: string =""): Analyzer  {
 	return Object.assign(
-		function _merge_(pc: ParseContext): AreaNode|null {
+		function _merge_(pc: ParseContext): Node|null {
 			const 
 				i0 = pc.i,
 				res = an(pc);
 			if (res) {
-				return {
-					__: `merge(${name? "'"+name+"'" : ""})`,
-					name,
-					at: [i0, pc.i],
-					get text() {return pc.text.slice(...this.at);},
-					ch: []
-				};
+				return new Node(
+					pc,
+					{
+						__: `merge(${name? "'"+name+"'" : ""})`,
+						name,
+						at: [i0, pc.i],
+						ch: []
+					}
+				);
 			} else {
 				return null;
 			}
@@ -131,18 +138,20 @@ function nToken (...patterns: (string|RegExp)[]): Analyzer
 		}
 	}
 	return Object.assign(
-		function _nToken_(pc: ParseContext): AreaNode|null {
+		function _nToken_(pc: ParseContext): Node|null {
 			for (const checker of checkers) {
 				if (checker(pc)) {
 					return null;
 				}
 			}
-			return {
-				__: `nToken(${patterns.map(v => "'"+v.toString()+"'").join(", ")})`,
-				at: [pc.i, pc.i += 1], 
-				get text() {return pc.text.slice(...this.at);},
-				ch: [],
-			};
+			return new Node(
+				pc,
+				{
+					__: `nToken(${patterns.map(v => "'"+v.toString()+"'").join(", ")})`,
+					at: [pc.i, pc.i += 1], 
+					ch: [],
+				}
+			);
 		},
 		analyzerMethods
 	);
@@ -151,17 +160,19 @@ function nToken (...patterns: (string|RegExp)[]): Analyzer
 function domain (name: string, x: Analyzer): Analyzer
 {
 	return Object.assign(
-		function _domain_(pc: ParseContext): AreaNode|null 
+		function _domain_(pc: ParseContext): Node|null 
 		{
 			const node = x(pc);
 			if (node) {
-				return {
-					__: `domain('${name}')`,
-					name,
-					at: [...node.at],
-					get text() {return pc.text.slice(...this.at);},
-					ch: [node],
-				};
+				return new Node(
+					pc,
+					{
+						__: `domain('${name}')`,
+						name,
+						at: [...node.at],
+						ch: [node],
+					}
+				);
 			} else {
 				return null;
 			}
@@ -172,7 +183,7 @@ function domain (name: string, x: Analyzer): Analyzer
 
 function seq (...args: Analyzer[]): Analyzer  {
 	return Object.assign(
-		function _seq_(pc: ParseContext): AreaNode|null {
+		function _seq_(pc: ParseContext): Node|null {
 			const 
 				xpc = {...pc},
 				i0 = pc.i,
@@ -189,12 +200,14 @@ function seq (...args: Analyzer[]): Analyzer  {
 			}
 			if (ok) {
 				pc.i = xpc.i;
-				return {
-					__: `seq(${args.length})`,
-					at: [i0, xpc.i],
-					get text() {return pc.text.slice(...this.at);},
-					ch: results,
-				};
+				return new Node(
+					pc,
+					{
+						__: `seq(${args.length})`,
+						at: [i0, xpc.i],
+						ch: results,
+					}
+				);
 			} else {
 				return null;
 			}
@@ -204,7 +217,7 @@ function seq (...args: Analyzer[]): Analyzer  {
 }
 function alt (...args: Analyzer[]): Analyzer  {
 	return Object.assign(
-		function _alt_(pc: ParseContext): AreaNode|null {
+		function _alt_(pc: ParseContext): Node|null {
 			for (const [k, analyzer] of args.entries()) {
 				const 
 					xpc = {...pc},
@@ -212,12 +225,14 @@ function alt (...args: Analyzer[]): Analyzer  {
 					res = analyzer(xpc);
 				if (res) {
 					pc.i = xpc.i;
-					return {
-						__: `alt(${args.length}) =${k + 1}`,
-						at: [...res.at],
-						get text() {return pc.text.slice(...this.at);},
-						ch: [res],
-					};
+					return new Node(
+						pc,
+						{
+							__: `alt(${args.length}) =${k + 1}`,
+							at: [...res.at],
+							ch: [res],
+						}
+					);
 				} else {}
 			}
 			return null;
@@ -228,37 +243,43 @@ function alt (...args: Analyzer[]): Analyzer  {
 function q (q: Quantity, x: Analyzer, y: Analyzer|null =null): Analyzer {
 	if (q === "?" ) {
 		return Object.assign(
-			function _zeroOrOne_(pc: ParseContext): AreaNode {
+			function _zeroOrOne_(pc: ParseContext): Node {
 				const res = x(pc);
 				if (res) {
-					return {
-						__: `q('?') =1`,
-						at: [...res.at], 
-						get text() {return pc.text.slice(...this.at);},
-						ch: [res],
-					};
+					return new Node(
+						pc,
+						{
+							__: `q('?') =1`,
+							at: [...res.at], 
+							ch: [res],
+						}
+					);
 				} else {
-					return {
-						__: `q('?') =0`,
-						at: [pc.i, pc.i], 
-						get text() {return pc.text.slice(...this.at);},
-						ch: [],
-					};
+					return new Node(
+						pc,
+						{
+							__: `q('?') =0`,
+							at: [pc.i, pc.i], 
+							ch: [],
+						}
+					);
 				}
 			},
 			analyzerMethods
 		);
 	} else if (q === "+" ) {
 		return Object.assign(
-			function _oneOrMany_(pc: ParseContext): AreaNode|null {
+			function _oneOrMany_(pc: ParseContext): Node|null {
 				const [results, at] = _many(x, pc);
 				if (results.length) {
-					return {
-						__: `q('+'); =${results.length}`,
-						at, 
-						get text() {return pc.text.slice(...this.at);},
-						ch: results
-					};
+					return new Node(
+						pc,
+						{
+							__: `q('+'); =${results.length}`,
+							at, 
+							ch: results
+						}
+					);
 				} else {
 					return null;
 				}
@@ -267,29 +288,33 @@ function q (q: Quantity, x: Analyzer, y: Analyzer|null =null): Analyzer {
 		);
 	} else if (q === "*" ) {
 		return Object.assign(
-			function _zeroOrMany_(pc: ParseContext): AreaNode|null {
+			function _zeroOrMany_(pc: ParseContext): Node|null {
 				const [results, at] = _many(x, pc);
-				return {
-					__: `q('*'); =${results.length}`,
-					at, 
-					get text() {return pc.text.slice(...this.at);},
-					ch: results
-				};
+				return new Node(
+					pc,
+					{
+						__: `q('*'); =${results.length}`,
+						at, 
+						ch: results
+					}
+				);
 			},
 			analyzerMethods
 		);
 	} else if (q === "+/") {
 		if (y) {
 			return Object.assign(
-				function _oneOrManySeparate_(pc: ParseContext): AreaNode|null {
+				function _oneOrManySeparate_(pc: ParseContext): Node|null {
 					const [results, at] = _manySep(x, pc, y);
 					if (results.length) {
-						return {
-							__: `q('+/'); =${results.length}`,
-							at, 
-							get text() {return pc.text.slice(...this.at);},
-							ch: results
-						};
+						return new Node(
+							pc,
+							{
+								__: `q('+/'); =${results.length}`,
+								at, 
+								ch: results
+							}
+						);
 					} else {
 						return null;
 					}
@@ -303,14 +328,16 @@ function q (q: Quantity, x: Analyzer, y: Analyzer|null =null): Analyzer {
 	} else if (q === "*/") {
 		if (y) {
 			return Object.assign(
-				function _zeroOrManySeparate_(pc: ParseContext): AreaNode|null {
+				function _zeroOrManySeparate_(pc: ParseContext): Node|null {
 					const [results, at] = _manySep(x, pc, y);
-					return {
-						__: `q('*/'); =${results.length}`,
-						at, 
-						get text() {return pc.text.slice(...this.at);},
-						ch: results
-					};
+					return new Node(
+						pc,
+						{
+							__: `q('*/'); =${results.length}`,
+							at, 
+							ch: results
+						}
+					);
 				},
 				analyzerMethods
 			);
@@ -368,7 +395,7 @@ function q (q: Quantity, x: Analyzer, y: Analyzer|null =null): Analyzer {
 }
 function not(x: Analyzer): Analyzer {
 	return Object.assign(
-		function _not_(pc: ParseContext): AreaNode|null {
+		function _not_(pc: ParseContext): Node|null {
 			const 
 				xpc = {...pc},
 				res = x(xpc);
@@ -376,12 +403,14 @@ function not(x: Analyzer): Analyzer {
 				return null;
 			} else {
 				pc.i++;
-				return {
-					__: `not()`,
-					at: [pc.i - 1, pc.i],
-					get text() {return pc.text.slice(...this.at);},
-					ch: [],
-				};
+				return new Node(
+					pc,
+					{
+						__: `not()`,
+						at: [pc.i - 1, pc.i],
+						ch: [],
+					},
+				);
 			}
 		},
 		analyzerMethods

@@ -9,7 +9,7 @@ export {
 	getNodeStack,
 	getDomainNodeStack,
 	last,
-	getModelOfNamedOnly,
+	// getModelOfNamedOnly,
 };
 
 function getNodeStack(model: AreaNode, posA: number, posB=posA): AreaNode[] {
@@ -68,7 +68,7 @@ function getDomainNodeStack(model: AreaNode, posA: number, posB=posA): AreaNode[
 	}
 }
 
-function getModelOfNamedOnly(model: AreaNode): AreaNode {
+/* function getModelOfNamedOnly(model: AreaNode): AreaNode {
 	const 
 		stack: AreaNode[] = [],
 		newModel: AreaNode = {...model, ...{ch: []}};
@@ -94,7 +94,7 @@ function getModelOfNamedOnly(model: AreaNode): AreaNode {
 			}
 		}
 	}
-}
+} */
 
 function last(arr: any[], i=0): any {
 	return arr[arr.length - 1 - i];
