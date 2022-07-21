@@ -1,10 +1,11 @@
 import {
 	AreaNode,
-	Node,
 	ParseContext,
 	Quantity,
 	Analyzer,
 } from "./types-interfaces";
+
+import Node from "./Node";
 
 export {
 	token,
