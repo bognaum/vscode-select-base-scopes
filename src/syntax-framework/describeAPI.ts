@@ -188,7 +188,7 @@ function seq (...args: Analyzer[]): Analyzer  {
 			const 
 				xpc = {...pc},
 				i0 = pc.i,
-				results: AreaNode[] = [];
+				results: Node[] = [];
 			let ok = true;
 			for (const analyzer of args) {
 				const res = analyzer(xpc);
@@ -352,12 +352,12 @@ function q (q: Quantity, x: Analyzer, y: Analyzer|null =null): Analyzer {
 	}
 
 	function _many(an: Analyzer, pc: ParseContext)
-	: [AreaNode[], [number, number]] 
+	: [Node[], [number, number]] 
 	{
 		const 
-			results: AreaNode[] = [],
+			results: Node[] = [],
 			i0 = pc.i;
-		let res: AreaNode|null;
+		let res: Node|null;
 		while ((pc.text[pc.i]) && (res = an(pc))) {
 			results.push(res);
 			if (_len(res) <= 0) {
@@ -368,16 +368,16 @@ function q (q: Quantity, x: Analyzer, y: Analyzer|null =null): Analyzer {
 	}
 
 	function _manySep(an1: Analyzer, pc: ParseContext, an2: Analyzer)
-	: [AreaNode[], [number, number]] 
+	: [Node[], [number, number]] 
 	{
 		const 
-			results: AreaNode[] = [],
+			results: Node[] = [],
 			xpc = {...pc},
 			i0 = pc.i;
 		let res = an1(xpc);
 		if (res) {
 			results.push(res);
-			let res2: AreaNode|null;
+			let res2: Node|null;
 			while ((pc.text[pc.i]) && (res2 = an2(xpc)) && (res = an1(xpc))) {
 				results.push(res2);
 				results.push(res);

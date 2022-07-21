@@ -11,7 +11,7 @@ interface AreaNode {
 	__: string;
 	name?: string;
 	at: [number, number];
-	ch?: AreaNode[];
+	ch?: Node[];
 }
 
 interface ParseContext {

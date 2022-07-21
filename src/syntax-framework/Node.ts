@@ -10,7 +10,7 @@ export default class Node {
 	readonly name?: string;
 	readonly at: [number, number];
 	readonly length: number;
-	readonly ch?: AreaNode[];
+	readonly ch?: Node[];
 	readonly #pc: ParseContext;
 	constructor (pc: ParseContext, t: AreaNode) {
 		this.__ = t.__;
