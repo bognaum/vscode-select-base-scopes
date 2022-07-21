@@ -232,13 +232,14 @@ function q (q: Quantity, x: Analyzer, y: Analyzer|null =null): Analyzer {
 				const res = x(pc);
 				if (res) {
 					return {
-						__: `q('?')`,
+						__: `q('?') =1`,
 						at: [...res.at], 
 						get text() {return pc.text.slice(...this.at);},
 						ch: [res],
 					};
 				} else {
 					return {
+						__: `q('?') =0`,
 						at: [pc.i, pc.i], 
 						get text() {return pc.text.slice(...this.at);},
 						ch: [],
