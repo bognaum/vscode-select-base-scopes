@@ -6,7 +6,7 @@ import {
 	alt,
 	q,
 	not,
-} from "./describeAPI";
+} from "./syntax-framework/describeAPI";
 
 const 
 	slashed = seq(token("\\"), token(/./y)),
@@ -18,9 +18,12 @@ const
 		),
 		seq(
 			token('"'),
-			alt(nToken('"'), slashed).q("*").merged(),
+			alt(
+				nToken('"').q("*"), 
+				slashed
+			).q("*").named("string.content"),
 			token('"'),
-		),
+		).named("string.quoted"),
 		seq(
 			token('`'),
 			alt(nToken('`'), slashed).q("*").merged(),
@@ -46,7 +49,9 @@ const
 				string,
 				comment,
 			)
-		).named("default")
+		).q("+").merged("default")
 	).q("*").named("default");
 
 export default main;
+
+console.log("Syntax analyzer compiled.");
