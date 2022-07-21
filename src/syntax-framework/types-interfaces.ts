@@ -1,13 +1,13 @@
-import Node from "./Node";
+import Node from "./AreaNode";
 
 export {
-	AreaNode,
+	IAreaNode,
 	ParseContext,
 	Quantity,
 	Analyzer,
 };
 
-interface AreaNode {
+interface IAreaNode {
 	__: string;
 	name?: string;
 	at: [number, number];
@@ -21,7 +21,7 @@ interface ParseContext {
 
 type Quantity = "?"|"+"|"*"|"+/"|"*/";
 
-// type Analyzer = (pc: ParseContext) => AreaNode|null;
+// type Analyzer = (pc: ParseContext) => IAreaNode|null;
 
 interface Analyzer {
 	(pc: ParseContext): Node|null;

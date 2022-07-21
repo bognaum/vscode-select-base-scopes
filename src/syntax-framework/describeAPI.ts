@@ -1,11 +1,11 @@
 import {
-	AreaNode,
+	IAreaNode,
 	ParseContext,
 	Quantity,
 	Analyzer,
 } from "./types-interfaces";
 
-import Node from "./Node";
+import AreaNode from "./AreaNode";
 
 export {
 	token,
@@ -41,14 +41,14 @@ function nTokens(...patterns: (string|RegExp)[]): Analyzer  {
 
 function token (...patterns: (string|RegExp)[]): Analyzer 
 {
-	const checkers: ((pc: ParseContext) => Node|null)[] = [];
+	const checkers: ((pc: ParseContext) => AreaNode|null)[] = [];
 	
 	for (const [k, pattern] of patterns.entries()) {
 		if (typeof pattern === "string") {
 			const len = pattern.length;
 			checkers[k] = (pc: ParseContext) => {
 				if (pc.text.startsWith(pattern, pc.i)) {
-					return new Node(
+					return new AreaNode(
 						pc,
 						{
 							__: `token(${patterns.map(v => "'"+v.toString()+"'").join(", ")}); ='${pattern}'`,
@@ -65,7 +65,7 @@ function token (...patterns: (string|RegExp)[]): Analyzer
 				pattern.lastIndex = pc.i;
 				const m = pc.text.match(pattern);
 				if (m) {
-					return new Node(
+					return new AreaNode(
 						pc,
 						{
 							__: `token(${patterns.map(v => "'"+v.toString()+"'").join(", ")}); ='${pattern}'`,
@@ -83,7 +83,7 @@ function token (...patterns: (string|RegExp)[]): Analyzer
 		}
 	}
 	return Object.assign(
-		function _token_(pc: ParseContext): Node|null {
+		function _token_(pc: ParseContext): AreaNode|null {
 			for (const checker of checkers) {
 				const m = checker(pc);
 				if (m) {
@@ -98,12 +98,12 @@ function token (...patterns: (string|RegExp)[]): Analyzer
 
 function merge(an: Analyzer, name: string =""): Analyzer  {
 	return Object.assign(
-		function _merge_(pc: ParseContext): Node|null {
+		function _merge_(pc: ParseContext): AreaNode|null {
 			const 
 				i0 = pc.i,
 				res = an(pc);
 			if (res) {
-				return new Node(
+				return new AreaNode(
 					pc,
 					{
 						__: `merge(${name? "'"+name+"'" : ""})`,
@@ -139,13 +139,13 @@ function nToken (...patterns: (string|RegExp)[]): Analyzer
 		}
 	}
 	return Object.assign(
-		function _nToken_(pc: ParseContext): Node|null {
+		function _nToken_(pc: ParseContext): AreaNode|null {
 			for (const checker of checkers) {
 				if (checker(pc)) {
 					return null;
 				}
 			}
-			return new Node(
+			return new AreaNode(
 				pc,
 				{
 					__: `nToken(${patterns.map(v => "'"+v.toString()+"'").join(", ")})`,
@@ -161,11 +161,11 @@ function nToken (...patterns: (string|RegExp)[]): Analyzer
 function domain (name: string, x: Analyzer): Analyzer
 {
 	return Object.assign(
-		function _domain_(pc: ParseContext): Node|null 
+		function _domain_(pc: ParseContext): AreaNode|null 
 		{
 			const node = x(pc);
 			if (node) {
-				return new Node(
+				return new AreaNode(
 					pc,
 					{
 						__: `domain('${name}')`,
@@ -184,11 +184,11 @@ function domain (name: string, x: Analyzer): Analyzer
 
 function seq (...args: Analyzer[]): Analyzer  {
 	return Object.assign(
-		function _seq_(pc: ParseContext): Node|null {
+		function _seq_(pc: ParseContext): AreaNode|null {
 			const 
 				xpc = {...pc},
 				i0 = pc.i,
-				results: Node[] = [];
+				results: AreaNode[] = [];
 			let ok = true;
 			for (const analyzer of args) {
 				const res = analyzer(xpc);
@@ -201,7 +201,7 @@ function seq (...args: Analyzer[]): Analyzer  {
 			}
 			if (ok) {
 				pc.i = xpc.i;
-				return new Node(
+				return new AreaNode(
 					pc,
 					{
 						__: `seq(${args.length})`,
@@ -218,7 +218,7 @@ function seq (...args: Analyzer[]): Analyzer  {
 }
 function alt (...args: Analyzer[]): Analyzer  {
 	return Object.assign(
-		function _alt_(pc: ParseContext): Node|null {
+		function _alt_(pc: ParseContext): AreaNode|null {
 			for (const [k, analyzer] of args.entries()) {
 				const 
 					xpc = {...pc},
@@ -226,7 +226,7 @@ function alt (...args: Analyzer[]): Analyzer  {
 					res = analyzer(xpc);
 				if (res) {
 					pc.i = xpc.i;
-					return new Node(
+					return new AreaNode(
 						pc,
 						{
 							__: `alt(${args.length}) =${k + 1}`,
@@ -244,10 +244,10 @@ function alt (...args: Analyzer[]): Analyzer  {
 function q (q: Quantity, x: Analyzer, y: Analyzer|null =null): Analyzer {
 	if (q === "?" ) {
 		return Object.assign(
-			function _zeroOrOne_(pc: ParseContext): Node {
+			function _zeroOrOne_(pc: ParseContext): AreaNode {
 				const res = x(pc);
 				if (res) {
-					return new Node(
+					return new AreaNode(
 						pc,
 						{
 							__: `q('?') =1`,
@@ -256,7 +256,7 @@ function q (q: Quantity, x: Analyzer, y: Analyzer|null =null): Analyzer {
 						}
 					);
 				} else {
-					return new Node(
+					return new AreaNode(
 						pc,
 						{
 							__: `q('?') =0`,
@@ -270,10 +270,10 @@ function q (q: Quantity, x: Analyzer, y: Analyzer|null =null): Analyzer {
 		);
 	} else if (q === "+" ) {
 		return Object.assign(
-			function _oneOrMany_(pc: ParseContext): Node|null {
+			function _oneOrMany_(pc: ParseContext): AreaNode|null {
 				const [results, at] = _many(x, pc);
 				if (results.length) {
-					return new Node(
+					return new AreaNode(
 						pc,
 						{
 							__: `q('+'); =${results.length}`,
@@ -289,9 +289,9 @@ function q (q: Quantity, x: Analyzer, y: Analyzer|null =null): Analyzer {
 		);
 	} else if (q === "*" ) {
 		return Object.assign(
-			function _zeroOrMany_(pc: ParseContext): Node|null {
+			function _zeroOrMany_(pc: ParseContext): AreaNode|null {
 				const [results, at] = _many(x, pc);
-				return new Node(
+				return new AreaNode(
 					pc,
 					{
 						__: `q('*'); =${results.length}`,
@@ -305,10 +305,10 @@ function q (q: Quantity, x: Analyzer, y: Analyzer|null =null): Analyzer {
 	} else if (q === "+/") {
 		if (y) {
 			return Object.assign(
-				function _oneOrManySeparate_(pc: ParseContext): Node|null {
+				function _oneOrManySeparate_(pc: ParseContext): AreaNode|null {
 					const [results, at] = _manySep(x, pc, y);
 					if (results.length) {
-						return new Node(
+						return new AreaNode(
 							pc,
 							{
 								__: `q('+/'); =${results.length}`,
@@ -329,9 +329,9 @@ function q (q: Quantity, x: Analyzer, y: Analyzer|null =null): Analyzer {
 	} else if (q === "*/") {
 		if (y) {
 			return Object.assign(
-				function _zeroOrManySeparate_(pc: ParseContext): Node|null {
+				function _zeroOrManySeparate_(pc: ParseContext): AreaNode|null {
 					const [results, at] = _manySep(x, pc, y);
-					return new Node(
+					return new AreaNode(
 						pc,
 						{
 							__: `q('*/'); =${results.length}`,
@@ -352,12 +352,12 @@ function q (q: Quantity, x: Analyzer, y: Analyzer|null =null): Analyzer {
 	}
 
 	function _many(an: Analyzer, pc: ParseContext)
-	: [Node[], [number, number]] 
+	: [AreaNode[], [number, number]] 
 	{
 		const 
-			results: Node[] = [],
+			results: AreaNode[] = [],
 			i0 = pc.i;
-		let res: Node|null;
+		let res: AreaNode|null;
 		while ((pc.text[pc.i]) && (res = an(pc))) {
 			results.push(res);
 			if (_len(res) <= 0) {
@@ -368,16 +368,16 @@ function q (q: Quantity, x: Analyzer, y: Analyzer|null =null): Analyzer {
 	}
 
 	function _manySep(an1: Analyzer, pc: ParseContext, an2: Analyzer)
-	: [Node[], [number, number]] 
+	: [AreaNode[], [number, number]] 
 	{
 		const 
-			results: Node[] = [],
+			results: AreaNode[] = [],
 			xpc = {...pc},
 			i0 = pc.i;
 		let res = an1(xpc);
 		if (res) {
 			results.push(res);
-			let res2: Node|null;
+			let res2: AreaNode|null;
 			while ((pc.text[pc.i]) && (res2 = an2(xpc)) && (res = an1(xpc))) {
 				results.push(res2);
 				results.push(res);
@@ -389,14 +389,14 @@ function q (q: Quantity, x: Analyzer, y: Analyzer|null =null): Analyzer {
 		pc.i = xpc.i;
 		return [results, [i0, xpc.i]];
 	}
-	function _len(node: AreaNode): number {
+	function _len(node: IAreaNode): number {
 		const len = node.at[1] - node.at[0];
 		return len;
 	}
 }
 function not(x: Analyzer): Analyzer {
 	return Object.assign(
-		function _not_(pc: ParseContext): Node|null {
+		function _not_(pc: ParseContext): AreaNode|null {
 			const 
 				xpc = {...pc},
 				res = x(xpc);
@@ -404,7 +404,7 @@ function not(x: Analyzer): Analyzer {
 				return null;
 			} else {
 				pc.i++;
-				return new Node(
+				return new AreaNode(
 					pc,
 					{
 						__: `not()`,

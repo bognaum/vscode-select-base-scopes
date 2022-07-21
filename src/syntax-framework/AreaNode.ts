@@ -1,18 +1,18 @@
 import {
-	AreaNode,
+	IAreaNode,
 	ParseContext,
 	Quantity,
 	Analyzer,
 } from "./types-interfaces";
 
-export default class Node {
+export default class AreaNode {
 	readonly __: string;
 	readonly name?: string;
 	readonly at: [number, number];
 	readonly length: number;
-	readonly ch?: Node[];
+	readonly ch?: AreaNode[];
 	readonly #pc: ParseContext;
-	constructor (pc: ParseContext, t: AreaNode) {
+	constructor (pc: ParseContext, t: IAreaNode) {
 		this.__ = t.__;
 		this.at = [...t.at];
 		this.length = t.at[1] - t.at[0];
@@ -36,19 +36,19 @@ export default class Node {
 		return [lines.length, lastLine.length + 1];
 	}
 
-	getNodeStack(posA: number, posB=posA): Node[] {
+	getNodeStack(posA: number, posB=posA): AreaNode[] {
 		return getNodeStack(this, posA, posB);
 	}
-	getDomainNodeStack(posA: number, posB=posA): Node[] {
+	getDomainNodeStack(posA: number, posB=posA): AreaNode[] {
 		return getDomainNodeStack(this, posA, posB);
 	}
 }
 
-function getNodeStack(model: Node, posA: number, posB=posA): Node[] {
-	const stack: Node[] = [];
+function getNodeStack(model: AreaNode, posA: number, posB=posA): AreaNode[] {
+	const stack: AreaNode[] = [];
 	recurs(model);
 	return stack;
-	function recurs(node: Node) {
+	function recurs(node: AreaNode) {
 		const [start, end] = node.at;
 		if (
 			start <= posA && posA < end && 
@@ -71,11 +71,11 @@ function getNodeStack(model: Node, posA: number, posB=posA): Node[] {
 	}
 }
 
-function getDomainNodeStack(model: Node, posA: number, posB=posA): Node[] {
-	const stack: Node[] = [];
+function getDomainNodeStack(model: AreaNode, posA: number, posB=posA): AreaNode[] {
+	const stack: AreaNode[] = [];
 	recurs(model);
 	return stack;
-	function recurs(node: Node) {
+	function recurs(node: AreaNode) {
 		const [start, end] = node.at;
 		if (
 			start <= posA && posA < end && 
