@@ -68,5 +68,6 @@ function getDomainNodeStack(model: AreaNode, posA: number, posB=posA): AreaNode[
 }
 
 function last(arr: [], i=0): any {
+function last(arr: any[], i=0): any {
 	return arr[arr.length - 1 - i];
 }
