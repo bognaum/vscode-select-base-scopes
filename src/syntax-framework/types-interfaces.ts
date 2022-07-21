@@ -24,11 +24,6 @@ type Quantity = "?"|"+"|"*"|"+/"|"*/";
 
 // type Analyzer = (pc: ParseContext) => AreaNode|null;
 
-interface Aaa {
-	(pc: ParseContext): AreaNode|null;
-	q: (pc: ParseContext) => AreaNode|null;
-}
-
 interface Analyzer {
 	(pc: ParseContext): AreaNode|null;
 	q: (x: Quantity) => Analyzer;
