@@ -1,5 +1,5 @@
 import * as vsc from 'vscode';
-import getStrAreas from './functions/getStrAreas';
+import main from './describe-syntax';
 export function activate(context: vsc.ExtensionContext) {
 	const commands = [
 		// vsc.commands.registerCommand('my-command', () => {}),
@@ -9,7 +9,7 @@ export function activate(context: vsc.ExtensionContext) {
 			const 
 				doc = tEditor.document,
 				text = doc.getText(),
-				res = getStrAreas(text);
+				res = main({text, i: 0});
 			console.log(`res >>`, res);
 			/* console.log("OK");
 			console.error(`(!)-USER'S `, `OK`);
