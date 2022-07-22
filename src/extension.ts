@@ -9,7 +9,7 @@ export function activate(context: vsc.ExtensionContext) {
 			const 
 				doc = tEditor.document,
 				text = doc.getText(),
-				res = main({text, i: 0});
+				res = main({text: () => text, i: 0});
 				if (res) {
 					console.log(`res.fullText >>`, res.globalText);
 				}

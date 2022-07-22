@@ -15,7 +15,7 @@ interface IAreaNode {
 }
 
 interface ParseContext {
-	readonly text: string;
+	readonly text: () => string;
 	i: number;
 }
 

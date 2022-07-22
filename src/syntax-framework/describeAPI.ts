@@ -47,7 +47,7 @@ function token (...patterns: (string|RegExp)[]): Analyzer
 		if (typeof pattern === "string") {
 			const len = pattern.length;
 			checkers[k] = (pc: ParseContext) => {
-				if (pc.text.startsWith(pattern, pc.i)) {
+				if (pc.text().startsWith(pattern, pc.i)) {
 					return new AreaNode(
 						pc,
 						{
@@ -63,7 +63,7 @@ function token (...patterns: (string|RegExp)[]): Analyzer
 		} else if (pattern instanceof RegExp) {
 			checkers[k] = (pc: ParseContext) => {
 				pattern.lastIndex = pc.i;
-				const m = pc.text.match(pattern);
+				const m = pc.text().match(pattern);
 				if (m) {
 					return new AreaNode(
 						pc,
@@ -126,12 +126,12 @@ function nToken (...patterns: (string|RegExp)[]): Analyzer
 
 	for (const [k, pattern] of patterns.entries()) {
 		if (typeof pattern === "string") {
-			checkers[k] = (pc: ParseContext) => pc.text.startsWith(pattern, pc.i);
+			checkers[k] = (pc: ParseContext) => pc.text().startsWith(pattern, pc.i);
 		// } else if (typeof pattern === "number") {
 		} else if (pattern instanceof RegExp) {
 			checkers[k] = (pc: ParseContext) => {
 				pattern.lastIndex = pc.i;
-				return !!pc.text.match(pattern);
+				return !!pc.text().match(pattern);
 			};
 		} else {
 			console.error(`(!)`, `Invalid argument ${k + 1} to 'nToken', pattern`);
@@ -358,7 +358,7 @@ function q (q: Quantity, x: Analyzer, y: Analyzer|null =null): Analyzer {
 			results: AreaNode[] = [],
 			i0 = pc.i;
 		let res: AreaNode|null;
-		while ((pc.text[pc.i]) && (res = an(pc))) {
+		while ((pc.text()[pc.i]) && (res = an(pc))) {
 			results.push(res);
 			if (_len(res) <= 0) {
 				break;
@@ -378,7 +378,7 @@ function q (q: Quantity, x: Analyzer, y: Analyzer|null =null): Analyzer {
 		if (res) {
 			results.push(res);
 			let res2: AreaNode|null;
-			while ((pc.text[pc.i]) && (res2 = an2(xpc)) && (res = an1(xpc))) {
+			while ((pc.text()[pc.i]) && (res2 = an2(xpc)) && (res = an1(xpc))) {
 				results.push(res2);
 				results.push(res);
 				if (_len(res) <= 0 && _len(res2) <= 0) {

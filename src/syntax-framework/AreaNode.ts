@@ -24,14 +24,14 @@ export default class AreaNode {
 			this.name = t.name;
 		}
 	}
-	get globalText (): string {return this.#pc.text;}
-	get localText  (): string {return this.#pc.text.slice(...this.at);}
+	get globalText (): string {return this.#pc.text();}
+	get localText  (): string {return this.#pc.text().slice(...this.at);}
 	get atLC       (): [[number, number], [number, number]] {
 		return [this.getPointLC(this.at[0]), this.getPointLC(this.at[1])];
 	}
 	getPointLC (offset: number): [number, number] {
 		const
-			lines = this.#pc.text.slice(0, offset).split("\n"),
+			lines = this.#pc.text().slice(0, offset).split("\n"),
 			lastLine = lines[lines.length - 1];
 		return [lines.length, lastLine.length + 1];
 	}
