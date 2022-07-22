@@ -30,4 +30,7 @@ interface Analyzer {
 	named: (x: string) => Analyzer;
 	merged: (x?: string) => Analyzer;
 	applyTo: (text: string) => AreaNode|null;
+	"?": Analyzer;
+	"+": Analyzer;
+	"*": Analyzer;
 }

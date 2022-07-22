@@ -37,12 +37,18 @@ const analyzerMethods = {
 	}
 };
 
-function tokens(...patterns: (string|RegExp)[]): Analyzer  {
-	return merge(q("+", token(...patterns)));
+interface RawAnalyzer {
+	(pc: ParseContext): AreaNode|null;
 }
 
-function nTokens(...patterns: (string|RegExp)[]): Analyzer  {
-	return merge(q("+", nToken(...patterns)));
+function makeAnalyzer(rAn: RawAnalyzer): Analyzer {
+	const an = Object.assign(rAn, analyzerMethods);
+	Object.defineProperties(an, {
+		"?": {get: () => q("?", an as Analyzer)},
+		"+": {get: () => q("+", an as Analyzer)},
+		"*": {get: () => q("*", an as Analyzer)},
+	});
+	return an as Analyzer;
 }
 
 
@@ -89,7 +95,7 @@ function token (...patterns: (string|RegExp)[]): Analyzer
 			checkers[k] = (pc: ParseContext) => null;
 		}
 	}
-	return Object.assign(
+	return makeAnalyzer(
 		function _token_(pc: ParseContext): AreaNode|null {
 			for (const checker of checkers) {
 				const m = checker(pc);
@@ -98,13 +104,12 @@ function token (...patterns: (string|RegExp)[]): Analyzer
 				}
 			}
 			return null;
-		},
-		analyzerMethods
+		}
 	);
 }
 
 function merge(an: Analyzer, name: string =""): Analyzer  {
-	return Object.assign(
+	return makeAnalyzer(
 		function _merge_(pc: ParseContext): AreaNode|null {
 			const 
 				i0 = pc.i,
@@ -122,8 +127,7 @@ function merge(an: Analyzer, name: string =""): Analyzer  {
 			} else {
 				return null;
 			}
-		},
-		analyzerMethods
+		}
 	);
 }
 
@@ -145,7 +149,7 @@ function nToken (...patterns: (string|RegExp)[]): Analyzer
 			checkers[k] = (pc: ParseContext) => false;
 		}
 	}
-	return Object.assign(
+	return makeAnalyzer(
 		function _nToken_(pc: ParseContext): AreaNode|null {
 			for (const checker of checkers) {
 				if (checker(pc)) {
@@ -160,14 +164,13 @@ function nToken (...patterns: (string|RegExp)[]): Analyzer
 					ch: [],
 				}
 			);
-		},
-		analyzerMethods
+		}
 	);
 }
 
 function domain (name: string, x: Analyzer): Analyzer
 {
-	return Object.assign(
+	return makeAnalyzer(
 		function _domain_(pc: ParseContext): AreaNode|null 
 		{
 			const node = x(pc);
@@ -184,13 +187,12 @@ function domain (name: string, x: Analyzer): Analyzer
 			} else {
 				return null;
 			}
-		},
-		analyzerMethods
+		}
 	);
 }
 
 function seq (...args: Analyzer[]): Analyzer  {
-	return Object.assign(
+	return makeAnalyzer(
 		function _seq_(pc: ParseContext): AreaNode|null {
 			const 
 				xpc = {...pc},
@@ -219,12 +221,11 @@ function seq (...args: Analyzer[]): Analyzer  {
 			} else {
 				return null;
 			}
-		},
-		analyzerMethods
+		}
 	);
 }
 function alt (...args: Analyzer[]): Analyzer  {
-	return Object.assign(
+	return makeAnalyzer(
 		function _alt_(pc: ParseContext): AreaNode|null {
 			for (const [k, analyzer] of args.entries()) {
 				const 
@@ -244,13 +245,12 @@ function alt (...args: Analyzer[]): Analyzer  {
 				} else {}
 			}
 			return null;
-		},
-		analyzerMethods
+		}
 	);
 }
 function q (q: Quantity, x: Analyzer, y: Analyzer|null =null): Analyzer {
 	if (q === "?" ) {
-		return Object.assign(
+		return makeAnalyzer(
 			function _zeroOrOne_(pc: ParseContext): AreaNode {
 				const res = x(pc);
 				if (res) {
@@ -272,11 +272,10 @@ function q (q: Quantity, x: Analyzer, y: Analyzer|null =null): Analyzer {
 						}
 					);
 				}
-			},
-			analyzerMethods
+			}
 		);
 	} else if (q === "+" ) {
-		return Object.assign(
+		return makeAnalyzer(
 			function _oneOrMany_(pc: ParseContext): AreaNode|null {
 				const [results, at] = _many(x, pc);
 				if (results.length) {
@@ -291,11 +290,10 @@ function q (q: Quantity, x: Analyzer, y: Analyzer|null =null): Analyzer {
 				} else {
 					return null;
 				}
-			},
-			analyzerMethods
+			}
 		);
 	} else if (q === "*" ) {
-		return Object.assign(
+		return makeAnalyzer(
 			function _zeroOrMany_(pc: ParseContext): AreaNode|null {
 				const [results, at] = _many(x, pc);
 				return new AreaNode(
@@ -306,12 +304,11 @@ function q (q: Quantity, x: Analyzer, y: Analyzer|null =null): Analyzer {
 						ch: results
 					}
 				);
-			},
-			analyzerMethods
+			}
 		);
 	} else if (q === "+/") {
 		if (y) {
-			return Object.assign(
+			return makeAnalyzer(
 				function _oneOrManySeparate_(pc: ParseContext): AreaNode|null {
 					const [results, at] = _manySep(x, pc, y);
 					if (results.length) {
@@ -326,16 +323,15 @@ function q (q: Quantity, x: Analyzer, y: Analyzer|null =null): Analyzer {
 					} else {
 						return null;
 					}
-				},
-				analyzerMethods
+				}
 			);
 		} else {
 			console.error(`(!)`, `Invalid argument 3 to q`, q, x, y);
-			return Object.assign((pc: ParseContext) => null, analyzerMethods);
+			return makeAnalyzer((pc: ParseContext) => null);
 		}
 	} else if (q === "*/") {
 		if (y) {
-			return Object.assign(
+			return makeAnalyzer(
 				function _zeroOrManySeparate_(pc: ParseContext): AreaNode|null {
 					const [results, at] = _manySep(x, pc, y);
 					return new AreaNode(
@@ -346,16 +342,15 @@ function q (q: Quantity, x: Analyzer, y: Analyzer|null =null): Analyzer {
 							ch: results
 						}
 					);
-				},
-				analyzerMethods
+				}
 			);
 		} else {
 			console.error(`(!)`, `Invalid argument 3 to q`, q, x, y);
-			return Object.assign((pc: ParseContext) => null, analyzerMethods);
+			return makeAnalyzer((pc: ParseContext) => null);
 		}
 	} else {
 		console.error(`(!)`, `Invalid arguments to q`, q, x, y);
-		return Object.assign((pc: ParseContext) => null, analyzerMethods);
+		return makeAnalyzer((pc: ParseContext) => null);
 	}
 
 	function _many(an: Analyzer, pc: ParseContext)
@@ -402,7 +397,7 @@ function q (q: Quantity, x: Analyzer, y: Analyzer|null =null): Analyzer {
 	}
 }
 function not(x: Analyzer): Analyzer {
-	return Object.assign(
+	return makeAnalyzer(
 		function _not_(pc: ParseContext): AreaNode|null {
 			const 
 				xpc = {...pc},
@@ -420,7 +415,6 @@ function not(x: Analyzer): Analyzer {
 					},
 				);
 			}
-		},
-		analyzerMethods
+		}
 	);
 }

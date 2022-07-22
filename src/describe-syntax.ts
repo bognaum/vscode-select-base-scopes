@@ -13,31 +13,31 @@ const
 	string = domain("string", alt(
 		seq(
 			token("'"),
-			alt(nToken("'"), slashed).q("*").merged(),
+			alt(nToken("'"), slashed)['*'].merged(),
 			token("'"),
 		),
 		seq(
 			token('"'),
 			alt(
-				nToken('"').q("*"), 
+				nToken('"')['*'], 
 				slashed
-			).q("*").named("string.content"),
+			)['*'].named("string.content"),
 			token('"'),
 		).named("string.quoted"),
 		seq(
 			token('`'),
-			alt(nToken('`'), slashed).q("*").merged(),
+			alt(nToken('`'), slashed)['*'].merged(),
 			token('`'),
 		)
 	)),
 	commentLine = seq(
 		token("//"), 
-		nToken("\n").q("*").merged(), 
+		nToken("\n")['*'].merged(), 
 		token("\n")
 	),
 	commentBlock = seq(
 		token("/*"),
-		nToken("*/").q("*").merged(),
+		nToken("*/")['*'].merged(),
 		token("*/")
 	),
 	comment = domain("comment", alt(commentLine, commentBlock)),
@@ -49,7 +49,7 @@ const
 				string,
 				comment,
 			)
-		).q("+").merged("default")
+		)["+"].merged("default")
 	).q("*").named("default");
 
 export default main;
