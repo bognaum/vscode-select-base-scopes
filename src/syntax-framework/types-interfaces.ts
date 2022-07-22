@@ -11,6 +11,7 @@ export {
 interface IAreaNode {
 	__: string;
 	name?: string;
+	fullText: () => string;
 	at: [number, number];
 	ch?: Node[];
 }

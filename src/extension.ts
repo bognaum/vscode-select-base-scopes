@@ -11,7 +11,7 @@ export function activate(context: vsc.ExtensionContext) {
 				text = doc.getText(),
 				res = main.applyTo(text);
 				if (res) {
-					console.log(`res.fullText >>`, res.globalText);
+					console.log(`res.fullText >>`, res.selfText);
 				}
 				console.log(`res >>`, res);
 			/* console.log("OK");

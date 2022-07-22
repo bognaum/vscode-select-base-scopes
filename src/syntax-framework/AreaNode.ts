@@ -11,12 +11,12 @@ export default class AreaNode {
 	readonly at: [number, number];
 	readonly length: number;
 	readonly ch?: AreaNode[];
-	readonly #pc: ParseContext;
-	constructor (pc: ParseContext, t: IAreaNode) {
-		this.__ = t.__;
-		this.at = [...t.at];
-		this.length = t.at[1] - t.at[0];
-		this.#pc = pc;
+	readonly fullText: () => string;
+	constructor (t: IAreaNode) {
+		this.__           = t.__;
+		this.at           = [...t.at];
+		this.length       = t.at[1] - t.at[0];
+		this.fullText   = t.fullText;
 		if (t.ch) {
 			this.ch = [...t.ch];
 		}
@@ -24,14 +24,13 @@ export default class AreaNode {
 			this.name = t.name;
 		}
 	}
-	get globalText (): string {return this.#pc.text();}
-	get localText  (): string {return this.#pc.text().slice(...this.at);}
+	get selfText   (): string {return this.fullText().slice(...this.at);}
 	get atLC       (): [[number, number], [number, number]] {
 		return [this.getPointLC(this.at[0]), this.getPointLC(this.at[1])];
 	}
 	getPointLC (offset: number): [number, number] {
 		const
-			lines = this.#pc.text().slice(0, offset).split("\n"),
+			lines = this.fullText().slice(0, offset).split("\n"),
 			lastLine = lines[lines.length - 1];
 		return [lines.length, lastLine.length + 1];
 	}

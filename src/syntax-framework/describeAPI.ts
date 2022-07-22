@@ -56,9 +56,9 @@ function token (...patterns: (string|RegExp)[]): Analyzer
 			checkers[k] = (pc: ParseContext) => {
 				if (pc.text().startsWith(pattern, pc.i)) {
 					return new AreaNode(
-						pc,
 						{
 							__: `token(${patterns.map(v => "'"+v.toString()+"'").join(", ")}); ='${pattern}'`,
+							fullText: pc.text,
 							at: [pc.i, pc.i += len], 
 							ch: []
 						}
@@ -73,9 +73,9 @@ function token (...patterns: (string|RegExp)[]): Analyzer
 				const m = pc.text().match(pattern);
 				if (m) {
 					return new AreaNode(
-						pc,
 						{
 							__: `token(${patterns.map(v => "'"+v.toString()+"'").join(", ")}); ='${pattern}'`,
+							fullText: pc.text,
 							at: [pc.i, pc.i = pattern.lastIndex], 
 							ch: []
 						}
@@ -111,10 +111,10 @@ function merge(an: Analyzer, name: string =""): Analyzer  {
 				res = an(pc);
 			if (res) {
 				return new AreaNode(
-					pc,
 					{
 						__: `merge(${name? "'"+name+"'" : ""})`,
 						name,
+						fullText: pc.text,
 						at: [i0, pc.i],
 						ch: []
 					}
@@ -153,9 +153,9 @@ function nToken (...patterns: (string|RegExp)[]): Analyzer
 				}
 			}
 			return new AreaNode(
-				pc,
 				{
 					__: `nToken(${patterns.map(v => "'"+v.toString()+"'").join(", ")})`,
+					fullText: pc.text,
 					at: [pc.i, pc.i += 1], 
 					ch: [],
 				}
@@ -173,10 +173,10 @@ function domain (name: string, x: Analyzer): Analyzer
 			const node = x(pc);
 			if (node) {
 				return new AreaNode(
-					pc,
 					{
 						__: `domain('${name}')`,
 						name,
+						fullText: pc.text,
 						at: [...node.at],
 						ch: [node],
 					}
@@ -209,9 +209,9 @@ function seq (...args: Analyzer[]): Analyzer  {
 			if (ok) {
 				pc.i = xpc.i;
 				return new AreaNode(
-					pc,
 					{
 						__: `seq(${args.length})`,
+						fullText: pc.text,
 						at: [i0, xpc.i],
 						ch: results,
 					}
@@ -234,9 +234,9 @@ function alt (...args: Analyzer[]): Analyzer  {
 				if (res) {
 					pc.i = xpc.i;
 					return new AreaNode(
-						pc,
 						{
 							__: `alt(${args.length}) =${k + 1}`,
+							fullText: pc.text,
 							at: [...res.at],
 							ch: [res],
 						}
@@ -255,18 +255,18 @@ function q (q: Quantity, x: Analyzer, y: Analyzer|null =null): Analyzer {
 				const res = x(pc);
 				if (res) {
 					return new AreaNode(
-						pc,
 						{
 							__: `q('?') =1`,
+							fullText: pc.text,
 							at: [...res.at], 
 							ch: [res],
 						}
 					);
 				} else {
 					return new AreaNode(
-						pc,
 						{
 							__: `q('?') =0`,
+							fullText: pc.text,
 							at: [pc.i, pc.i], 
 							ch: [],
 						}
@@ -281,9 +281,9 @@ function q (q: Quantity, x: Analyzer, y: Analyzer|null =null): Analyzer {
 				const [results, at] = _many(x, pc);
 				if (results.length) {
 					return new AreaNode(
-						pc,
 						{
 							__: `q('+'); =${results.length}`,
+							fullText: pc.text,
 							at, 
 							ch: results
 						}
@@ -299,9 +299,9 @@ function q (q: Quantity, x: Analyzer, y: Analyzer|null =null): Analyzer {
 			function _zeroOrMany_(pc: ParseContext): AreaNode|null {
 				const [results, at] = _many(x, pc);
 				return new AreaNode(
-					pc,
 					{
 						__: `q('*'); =${results.length}`,
+						fullText: pc.text,
 						at, 
 						ch: results
 					}
@@ -316,9 +316,9 @@ function q (q: Quantity, x: Analyzer, y: Analyzer|null =null): Analyzer {
 					const [results, at] = _manySep(x, pc, y);
 					if (results.length) {
 						return new AreaNode(
-							pc,
 							{
 								__: `q('+/'); =${results.length}`,
+								fullText: pc.text,
 								at, 
 								ch: results
 							}
@@ -339,9 +339,9 @@ function q (q: Quantity, x: Analyzer, y: Analyzer|null =null): Analyzer {
 				function _zeroOrManySeparate_(pc: ParseContext): AreaNode|null {
 					const [results, at] = _manySep(x, pc, y);
 					return new AreaNode(
-						pc,
 						{
 							__: `q('*/'); =${results.length}`,
+							fullText: pc.text,
 							at, 
 							ch: results
 						}
@@ -412,9 +412,9 @@ function not(x: Analyzer): Analyzer {
 			} else {
 				pc.i++;
 				return new AreaNode(
-					pc,
 					{
 						__: `not()`,
+						fullText: pc.text,
 						at: [pc.i - 1, pc.i],
 						ch: [],
 					},
