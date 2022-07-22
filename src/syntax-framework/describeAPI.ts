@@ -2,6 +2,7 @@ import {
 	IAreaNode,
 	ParseContext,
 	Quantity,
+	RawAnalyzer,
 	Analyzer,
 } from "./types-interfaces";
 
@@ -36,10 +37,6 @@ const analyzerMethods = {
 		return this(pc);
 	}
 };
-
-interface RawAnalyzer {
-	(pc: ParseContext): AreaNode|null;
-}
 
 function makeAnalyzer(rAn: RawAnalyzer): Analyzer {
 	const an = Object.assign(rAn, analyzerMethods);

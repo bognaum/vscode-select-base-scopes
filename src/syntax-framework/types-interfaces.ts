@@ -4,6 +4,7 @@ export {
 	IAreaNode,
 	ParseContext,
 	Quantity,
+	RawAnalyzer,
 	Analyzer,
 };
 
@@ -24,8 +25,12 @@ type Quantity = "?"|"+"|"*"|"+/"|"*/";
 
 // type Analyzer = (pc: ParseContext) => IAreaNode|null;
 
-interface Analyzer {
+
+interface RawAnalyzer {
 	(pc: ParseContext): AreaNode|null;
+}
+
+interface Analyzer extends RawAnalyzer {
 	q: (x: Quantity) => Analyzer;
 	named: (x: string) => Analyzer;
 	merged: (x?: string) => Analyzer;
