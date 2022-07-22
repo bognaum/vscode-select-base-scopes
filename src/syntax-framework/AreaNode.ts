@@ -103,13 +103,17 @@ function getDomainNodeStack(model: AreaNode, posA: number, posB=posA): AreaNode[
 }
 
 function getModelOfNamedOnly(model: IAreaNode): AreaNode {
-	return recurs(model);
+	let oldModelNodes = 0, newModelNodes = 0;
+	const res: AreaNode = recurs(model);
+	console.log("Old model nodes:", oldModelNodes, "; New model nodes:", newModelNodes);
+	return res;
 
 	function recurs(node: IAreaNode): AreaNode;
 	function recurs(node: IAreaNode, dept: 0): AreaNode;
 	function recurs(node: IAreaNode, dept: number): AreaNode|AreaNode[];
 
 	function recurs(node: IAreaNode, dept=0): AreaNode|AreaNode[] {
+		oldModelNodes ++;
 		const children: AreaNode[] = [];
 		if (node.ch?.length) {
 			for (const ch of node.ch) {
@@ -122,6 +126,7 @@ function getModelOfNamedOnly(model: IAreaNode): AreaNode {
 			}
 		} else {}
 		if (!dept || node.name) {
+			newModelNodes ++;
 			const newNode: AreaNode = new AreaNode({...node, ch: children});
 			return newNode;
 		} else {
