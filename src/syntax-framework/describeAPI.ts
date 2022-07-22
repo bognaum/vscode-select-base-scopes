@@ -19,35 +19,38 @@ export {
 	merge,
 };
 
-const analyzerMethods = {
-	q: function (this: Analyzer, quantity: Quantity): Analyzer {
-		return q(quantity, this);
-	},
-	named: function (this: Analyzer, name: string): Analyzer {
-		return domain(name, this);
-	},
-	merged: function (this: Analyzer, name: string =""): Analyzer {
-		return merge(this, name);
-	},
-	applyTo: function (this: Analyzer, text: string): AreaNode|null {
-		const pc: ParseContext = {
-			text: () => text,
-			i: 0
-		};
-		return this(pc);
-	}
-};
-
 function makeAnalyzer(rAn: RawAnalyzer): Analyzer {
-	const an = Object.assign(rAn, analyzerMethods);
-	Object.defineProperties(an, {
-		"?": {get: () => q("?", an as Analyzer)},
-		"+": {get: () => q("+", an as Analyzer)},
-		"*": {get: () => q("*", an as Analyzer)},
+	Object.defineProperties(rAn, {
+		"?": {get: function() {return q("?", this)}},
+		"+": {get: function() {return q("+", this)}},
+		"*": {get: function() {return q("*", this)}},
+		q: {
+			value: function (quantity: Quantity): Analyzer {
+				return q(quantity, this);
+			}
+		},
+		named: {
+			value: function (name: string): Analyzer {
+				return domain(name, this);
+			}
+		},
+		merged: {
+			value: function (name: string =""): Analyzer {
+				return merge(this, name);
+			}
+		},
+		applyTo: {
+			value: function (text: string): AreaNode|null {
+				const pc: ParseContext = {
+					text: () => text,
+					i: 0
+				};
+				return this(pc);
+			}
+		},
 	});
-	return an as Analyzer;
+	return rAn as Analyzer;
 }
-
 
 function token (...patterns: (string|RegExp)[]): Analyzer 
 {
