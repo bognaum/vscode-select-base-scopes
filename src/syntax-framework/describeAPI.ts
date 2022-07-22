@@ -28,6 +28,13 @@ const analyzerMethods = {
 	merged: function (this: Analyzer, name: string =""): Analyzer {
 		return merge(this, name);
 	},
+	applyTo: function (this: Analyzer, text: string): AreaNode|null {
+		const pc: ParseContext = {
+			text: () => text,
+			i: 0
+		};
+		return this(pc);
+	}
 };
 
 function tokens(...patterns: (string|RegExp)[]): Analyzer  {

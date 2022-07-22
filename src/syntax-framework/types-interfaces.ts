@@ -1,3 +1,4 @@
+import AreaNode from "./AreaNode";
 import Node from "./AreaNode";
 
 export {
@@ -28,4 +29,5 @@ interface Analyzer {
 	q: (x: Quantity) => Analyzer;
 	named: (x: string) => Analyzer;
 	merged: (x?: string) => Analyzer;
+	applyTo: (text: string) => AreaNode|null;
 }
