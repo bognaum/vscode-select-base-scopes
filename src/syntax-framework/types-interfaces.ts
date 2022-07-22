@@ -1,5 +1,4 @@
 import AreaNode from "./AreaNode";
-import Node from "./AreaNode";
 
 export {
 	IAreaNode,
@@ -13,7 +12,7 @@ interface IAreaNode {
 	name?: string;
 	fullText: () => string;
 	at: [number, number];
-	ch?: Node[];
+	ch?: AreaNode[];
 }
 
 interface ParseContext {
@@ -26,7 +25,7 @@ type Quantity = "?"|"+"|"*"|"+/"|"*/";
 // type Analyzer = (pc: ParseContext) => IAreaNode|null;
 
 interface Analyzer {
-	(pc: ParseContext): Node|null;
+	(pc: ParseContext): AreaNode|null;
 	q: (x: Quantity) => Analyzer;
 	named: (x: string) => Analyzer;
 	merged: (x?: string) => Analyzer;
