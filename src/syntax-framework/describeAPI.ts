@@ -112,7 +112,7 @@ function merge(an: Analyzer, name: string =""): Analyzer  {
 			if (res) {
 				return new AreaNode(
 					{
-						__: `merge(${name? "'"+name+"'" : ""})`,
+						__: `merge (${name? "'"+name+"'" : ""})`,
 						name,
 						fullText: pc.text,
 						at: [i0, pc.i],
