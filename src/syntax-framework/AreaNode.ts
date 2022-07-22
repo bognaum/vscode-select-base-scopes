@@ -41,6 +41,9 @@ export default class AreaNode {
 	getDomainNodeStack(posA: number, posB=posA): AreaNode[] {
 		return getDomainNodeStack(this, posA, posB);
 	}
+	getModelOfNamedOnly(): AreaNode {
+		return getModelOfNamedOnly(this);
+	}
 }
 
 function getNodeStack(model: AreaNode, posA: number, posB=posA): AreaNode[] {
@@ -97,4 +100,35 @@ function getDomainNodeStack(model: AreaNode, posA: number, posB=posA): AreaNode[
 			} 
 		}
 	}
+}
+
+function getModelOfNamedOnly(model: IAreaNode): AreaNode {
+	return recurs(model, true);
+
+	function recurs(node: IAreaNode, getNodeSure: true,  dept?: number): AreaNode;
+	function recurs(node: IAreaNode, getNodeSure: false, dept?: number): AreaNode|AreaNode[];
+
+	function recurs(node: IAreaNode, getNodeSure=false, dept=0): AreaNode|AreaNode[] {
+		const children: AreaNode[] = [];
+		if (node.ch?.length) {
+			for (const ch of node.ch) {
+				const res = recurs(ch, false, dept + 1);
+				if (res instanceof Array) {
+					children.push(...res);
+				} else if (res instanceof AreaNode) {
+					children.push(res);
+				}
+			}
+		} else {}
+		if (getNodeSure || node.name) {
+			const newNode: AreaNode = new AreaNode({...node, ch: children});
+			return newNode;
+		} else {
+			return children;
+		}
+	}
+}
+
+function last(arr: any[], i=0): any {
+	return arr[arr.length - 1 - i];
 }

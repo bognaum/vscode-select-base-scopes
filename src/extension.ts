@@ -10,10 +10,10 @@ export function activate(context: vsc.ExtensionContext) {
 				doc = tEditor.document,
 				text = doc.getText(),
 				res = main.applyTo(text);
-				if (res) {
-					console.log(`res.fullText >>`, res.selfText);
-				}
 				console.log(`res >>`, res);
+				if (res) {
+					console.log(`res.getModelOfNamedOnly() >>`, res.getModelOfNamedOnly());
+				}
 			/* console.log("OK");
 			console.error(`(!)-USER'S `, `OK`);
 			console.trace(`tEditor >>`, tEditor);
