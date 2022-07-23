@@ -14,14 +14,14 @@ const
 	string = domain("string", alt(
 		seq(
 			token("'"),
-			alt(nToken("'")['*'].merged(), slashed)['*'].named("string.content"),
+			alt(nToken("'")['*'].merged(), slashed)['*'].as("string.content"),
 			token("'"),
-		).named("string.quoted"),
+		).as("string.quoted"),
 		seq(
 			token('"'),
-			alt(nToken('"')['*'].merged(), slashed)['*'].named("string.content"),
+			alt(nToken('"')['*'].merged(), slashed)['*'].as("string.content"),
 			token('"'),
-		).named("string.quoted"),
+		).as("string.quoted"),
 		seq(
 			token('`'),
 			alt(nToken('`'), slashed)['*'].merged(),
@@ -46,10 +46,10 @@ const
 	main = alt(
 		subjects,
 		not(subjects)
-	)['*'].named("default"),
+	)['*'].as("default"),
 	glob = global()(
 		subjects,
-		not(subjects)['*'].named("simple")
+		not(subjects)['*'].as("simple")
 	);
 
 export default glob;

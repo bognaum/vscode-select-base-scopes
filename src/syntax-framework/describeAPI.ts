@@ -30,7 +30,7 @@ function makeAnalyzer(rAn: RawAnalyzer): Analyzer {
 				return q(quantity, this);
 			}
 		},
-		named: {
+		as: {
 			value: function (name: string): Analyzer {
 				return domain(name, this);
 			}
