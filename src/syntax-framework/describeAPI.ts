@@ -17,6 +17,7 @@ export {
 	q,
 	not,
 	merge,
+	global,
 };
 
 function makeAnalyzer(rAn: RawAnalyzer): Analyzer {
@@ -433,4 +434,18 @@ function not(x: Analyzer): Analyzer {
 			}
 		}
 	);
+}
+
+function global(globName="", defName="_unrecognized_") {
+	return function (...variants: Analyzer[]): Analyzer {
+		const 
+			analyzer = q('*', 
+				alt(
+					domain(globName, q('+', alt(    ...variants ))),
+					domain(defName , q('+', not(alt(...variants))))
+				)
+			),
+			alter = alt(...variants);
+		return analyzer;
+	};
 }

@@ -6,6 +6,7 @@ import {
 	alt,
 	q,
 	not,
+	global,
 } from "./syntax-framework/describeAPI";
 
 const 
@@ -41,17 +42,19 @@ const
 		token("*/")
 	),
 	comment = domain("comment", alt(commentLine, commentBlock)),
-	main = alt(
+	subjects = alt(
 		string,
 		comment,
-		not(
-			alt(
-				string,
-				comment,
-			)
-		)["+"].merged("default")
-	).q("*").named("default");
+	),
+	main = alt(
+		subjects,
+		not(subjects)
+	)['*'].named("default"),
+	glob = global()(
+		subjects,
+		not(subjects)['*'].named("simple")
+	);
 
-export default main;
+export default glob;
 
 console.log("Syntax analyzer compiled.");
