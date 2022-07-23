@@ -9,7 +9,7 @@ import {
 } from "./syntax-framework/describeAPI";
 
 const 
-	slashed = seq(token("\\"), token(/./y)),
+	slashed = seq(token("\\"), token(1)),
 	string = domain("string", alt(
 		seq(
 			token("'"),

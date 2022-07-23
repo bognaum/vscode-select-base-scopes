@@ -52,12 +52,29 @@ function makeAnalyzer(rAn: RawAnalyzer): Analyzer {
 	return rAn as Analyzer;
 }
 
-function token (...patterns: (string|RegExp)[]): Analyzer 
+function token (...patterns: (string|RegExp|number)[]): Analyzer 
 {
 	const checkers: ((pc: ParseContext) => AreaNode|null)[] = [];
 	
 	for (const [k, pattern] of patterns.entries()) {
-		if (typeof pattern === "string") {
+		if (typeof pattern === "number") {
+			if (0 < pattern) {
+				const len = pattern;
+				checkers[k] = (pc: ParseContext) => {
+					return new AreaNode(
+						{
+							__: `token(${patterns.map(v => "'"+v.toString()+"'").join(", ")}); ='${pattern}'`,
+							fullText: pc.text,
+							at: [pc.i, pc.i += len], 
+							ch: []
+						}
+					);
+				};
+			} else {
+				console.error(`(!)`, `Pattern must be more that 0. The pattern is ${pattern}`);
+				throw new Error("Pattern must be more that 0.");
+			}
+		} else if (typeof pattern === "string") {
 			const len = pattern.length;
 			checkers[k] = (pc: ParseContext) => {
 				if (pc.text().startsWith(pattern, pc.i)) {
@@ -138,7 +155,6 @@ function nToken (...patterns: (string|RegExp)[]): Analyzer
 	for (const [k, pattern] of patterns.entries()) {
 		if (typeof pattern === "string") {
 			checkers[k] = (pc: ParseContext) => pc.text().startsWith(pattern, pc.i);
-		// } else if (typeof pattern === "number") {
 		} else if (pattern instanceof RegExp) {
 			checkers[k] = (pc: ParseContext) => {
 				pattern.lastIndex = pc.i;
