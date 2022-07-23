@@ -39,7 +39,7 @@ function makeAnalyzer(rAn: RawAnalyzer): Analyzer {
 				return merge(this, name);
 			}
 		},
-		applyTo: {
+		applyToText: {
 			value: function (text: string): AreaNode|null {
 				const pc: ParseContext = {
 					text: () => text,

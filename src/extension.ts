@@ -9,7 +9,7 @@ export function activate(context: vsc.ExtensionContext) {
 			const 
 				doc = tEditor.document,
 				text = doc.getText(),
-				res = main.applyTo(text);
+				res = main.applyToText(text);
 				console.log(`res >>`, res);
 				if (res) {
 					console.log(`res.getModelOfNamedOnly() >>`, res.getModelOfNamedOnly());
