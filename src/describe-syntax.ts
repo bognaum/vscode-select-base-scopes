@@ -14,15 +14,12 @@ const
 	string = domain("string", alt(
 		seq(
 			token("'"),
-			alt(nToken("'"), slashed)['*'].merged(),
+			alt(nToken("'")['*'].merged(), slashed)['*'].named("string.content"),
 			token("'"),
-		),
+		).named("string.quoted"),
 		seq(
 			token('"'),
-			alt(
-				nToken('"')['*'], 
-				slashed
-			)['*'].named("string.content"),
+			alt(nToken('"')['*'].merged(), slashed)['*'].named("string.content"),
 			token('"'),
 		).named("string.quoted"),
 		seq(
