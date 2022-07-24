@@ -11,6 +11,7 @@ import {
 } from "./syntax-framework/describeAPI";
 
 const 
+	re = token(/\/(\\\/|[^\/\n])+\/[migy]{0,4}/y),
 	slashed = seq(token("\\"), token(1)),
 	stringTag = domain("string.tag", seq(
 		token("${"),
@@ -48,9 +49,36 @@ const
 		token("*/")
 	),
 	comment = domain("comment", alt(commentLine, commentBlock)),
+	parenRound = seq(
+		token("("),
+		alt(
+			ref(() => mainScopeSubjects),
+			nToken(")"),
+		)['*'].as("paren.content"),
+		token(")"),
+	),
+	parenCurly = seq(
+		token("{"),
+		alt(
+			ref(() => mainScopeSubjects),
+			nToken("}"),
+		)['*'].as("paren.content"),
+		token("}"),
+	),
+	parenSquare = seq(
+		token("["),
+		alt(
+			ref(() => mainScopeSubjects),
+			nToken("]"),
+		)['*'].as("paren.content"),
+		token("]"),
+	),
+	paren = alt(parenRound, parenCurly, parenSquare).as("paren"), 
 	mainScopeSubjects = alt(
-		string,
 		comment,
+		string,
+		re,
+		paren,
 	),
 	main = alt(
 		mainScopeSubjects,
@@ -65,7 +93,11 @@ export default glob;
 
 console.log("Syntax analyzer compiled.");
 
-console.log("1", stringTag.applyToText("${el.scrollHeight}")?.namedOnly);
-console.log("1.1", stringTag.applyToText("${}")?.namedOnly);
-console.log("1.2", alt(mainScopeSubjects, token(1)).applyToText("el.scrollHeight")?.namedOnly);
-console.log("2", string.applyToText("'${el.scrollHeight}'")?.namedOnly);
+// console.log("1", stringTag.applyToText("${el.scrollHeight}")?.namedOnly);
+// console.log("1.1", stringTag.applyToText("${}")?.namedOnly);
+// console.log("1.2", alt(mainScopeSubjects, token(1)).applyToText("el.scrollHeight")?.namedOnly);
+// console.log("2", string.applyToText("'${el.scrollHeight}'")?.namedOnly);
+console.log("3", paren.applyToText(
+	'(translate(el, "width" , ["0", `${el.scrollWidth }px`, ""], showW),)'
+	// 'translate(el, "width" , ["0", `${el.scrollWidth }px`, ""], showW),'
+)?.namedOnly);
