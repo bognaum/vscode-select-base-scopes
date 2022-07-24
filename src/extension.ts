@@ -12,7 +12,7 @@ export function activate(context: vsc.ExtensionContext) {
 				res = main.applyToText(text);
 				console.log(`res >>`, res);
 				if (res) {
-					console.log(`res.getModelOfNamedOnly() >>`, res.getModelOfNamedOnly());
+					console.log(`res.namedOnly >>`, res.namedOnly);
 				}
 			/* console.log("OK");
 			console.error(`(!)-USER'S `, `OK`);

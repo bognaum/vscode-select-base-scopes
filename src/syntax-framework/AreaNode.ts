@@ -24,6 +24,7 @@ export default class AreaNode {
 			this.name = t.name;
 		}
 	}
+	get namedOnly  (): AreaNode {return getModelOfNamedOnly(this);}
 	get selfText   (): string {return this.fullText().slice(...this.at);}
 	get atLC       (): [[number, number], [number, number]] {
 		return [this.getPointLC(this.at[0]), this.getPointLC(this.at[1])];
@@ -40,9 +41,6 @@ export default class AreaNode {
 	}
 	getDomainNodeStack(posA: number, posB=posA): AreaNode[] {
 		return getDomainNodeStack(this, posA, posB);
-	}
-	getModelOfNamedOnly(): AreaNode {
-		return getModelOfNamedOnly(this);
 	}
 }
 
