@@ -93,6 +93,14 @@ function token (...patterns: (string|RegExp|number)[]): Analyzer
 				}
 			};
 		} else if (pattern instanceof RegExp) {
+			if (!pattern.sticky) {
+				console.error(`(!)`, `The regexp of token '${pattern.toString()}' must have the 'y' flag.`);
+				throw new Error("The regexp of token '${pattern.toString()}' must have the 'y' flag.");
+			}
+			if (pattern.global) {
+				console.error(`(!)`, `The regexp of token cannot have the 'g' flag.`);
+				throw new Error("The regexp of token cannot have the 'g' flag.");
+			}
 			checkers[k] = (pc: ParseContext) => {
 				pattern.lastIndex = pc.i;
 				const m = pc.text().match(pattern);
@@ -158,6 +166,14 @@ function nToken (...patterns: (string|RegExp)[]): Analyzer
 		if (typeof pattern === "string") {
 			checkers[k] = (pc: ParseContext) => pc.text().startsWith(pattern, pc.i);
 		} else if (pattern instanceof RegExp) {
+			if (!pattern.sticky) {
+				console.error(`(!)`, `The regexp of nToken '${pattern.toString()}' must have the 'y' flag.`);
+				throw new Error("The regexp of nToken '${pattern.toString()}' must have the 'y' flag.");
+			}
+			if (pattern.global) {
+				console.error(`(!)`, `The regexp of nToken cannot have the 'g' flag.`);
+				throw new Error("The regexp of nToken cannot have the 'g' flag.");
+			}
 			checkers[k] = (pc: ParseContext) => {
 				pattern.lastIndex = pc.i;
 				return !!pc.text().match(pattern);
