@@ -40,12 +40,12 @@ const
 	)),
 	commentLine = seq(
 		token("//"), 
-		nToken("\n")['*'].merged(), 
+		nToken("\n")['*'].merged("comment.content"), 
 		token("\n")
 	),
 	commentBlock = seq(
 		token("/*"),
-		nToken("*/")['*'].merged(),
+		nToken("*/")['*'].merged("comment.content"),
 		token("*/")
 	),
 	comment = domain("comment", alt(commentLine, commentBlock)),
