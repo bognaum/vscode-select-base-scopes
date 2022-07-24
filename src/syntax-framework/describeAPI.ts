@@ -17,6 +17,7 @@ export {
 	q,
 	not,
 	merge,
+	ref,
 	global,
 };
 
@@ -432,6 +433,13 @@ function not(x: Analyzer): Analyzer {
 					},
 				);
 			}
+		}
+	);
+}
+function ref(f: () => Analyzer): Analyzer {
+	return makeAnalyzer(
+		function _ref_(pc: ParseContext): AreaNode|null {
+			return f()(pc);
 		}
 	);
 }

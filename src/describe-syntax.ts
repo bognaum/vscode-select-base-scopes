@@ -6,11 +6,18 @@ import {
 	alt,
 	q,
 	not,
+	ref,
 	global,
 } from "./syntax-framework/describeAPI";
 
 const 
 	slashed = seq(token("\\"), token(1)),
+	stringTag = domain("string.tag", seq(
+		token("${"),
+		// ref(() => mainScope)['*'].as("string.tag.content"),
+		nToken("}")['*'].as("string.tag"),
+		token("}"),
+	)),
 	string = domain("string", alt(
 		seq(
 			token("'"),
@@ -24,7 +31,7 @@ const
 		).as("string.quoted"),
 		seq(
 			token('`'),
-			alt(nToken('`'), slashed)['*'].merged(),
+			alt(stringTag, slashed, nToken('`')['*'])['*'],
 			token('`'),
 		)
 	)),
