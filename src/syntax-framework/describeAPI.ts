@@ -43,11 +43,16 @@ function makeAnalyzer(rAn: RawAnalyzer): Analyzer {
 		},
 		applyToText: {
 			value: function (text: string): AreaNode|null {
+				const startDT = Date.now();
 				const pc: ParseContext = {
 					text: () => text,
 					i: 0
 				};
-				return this(pc);
+				const res = this(pc);
+
+				const endDT = Date.now(), performT = (endDT - startDT);
+				console.log(`'applyToText()' perform time: ${performT}mSec`);
+				return res;
 			}
 		},
 	});

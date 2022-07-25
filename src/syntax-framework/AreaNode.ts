@@ -101,9 +101,11 @@ function getDomainNodeStack(model: AreaNode, posA: number, posB=posA): AreaNode[
 }
 
 function getModelOfNamedOnly(model: IAreaNode): AreaNode {
+	const startDT = Date.now();
 	let oldModelNodes = 0, newModelNodes = 0;
 	const res: AreaNode = recurs(model);
-	console.log("Old model nodes:", oldModelNodes, "; New model nodes:", newModelNodes);
+	const endDT = Date.now(), performT = (endDT - startDT);
+	console.log(`'getModelOfNamedOnly()' perform time: ${performT}mSec.`,"\nOld model nodes:", oldModelNodes, "; New model nodes:", newModelNodes);
 	return res;
 
 	function recurs(node: IAreaNode): AreaNode;
