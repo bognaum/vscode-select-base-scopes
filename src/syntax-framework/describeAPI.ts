@@ -145,7 +145,7 @@ function merge(an: Analyzer, name: string =""): Analyzer  {
 				return new AreaNode(
 					{
 						__: `merge (${name? "'"+name+"'" : ""})`,
-						name,
+						...(name ? {name} : {}),
 						fullText: pc.text,
 						at: [i0, pc.i],
 						ch: []
@@ -160,44 +160,24 @@ function merge(an: Analyzer, name: string =""): Analyzer  {
 
 function nToken (...patterns: (string|RegExp)[]): Analyzer 
 {
-	const checkers: ((pc: ParseContext) => boolean)[] = [];
-
-	for (const [k, pattern] of patterns.entries()) {
-		if (typeof pattern === "string") {
-			checkers[k] = (pc: ParseContext) => pc.text().startsWith(pattern, pc.i);
-		} else if (pattern instanceof RegExp) {
-			if (!pattern.sticky) {
-				console.error(`(!)`, `The regexp of nToken '${pattern.toString()}' must have the 'y' flag.`);
-				throw new Error("The regexp of nToken '${pattern.toString()}' must have the 'y' flag.");
-			}
-			if (pattern.global) {
-				console.error(`(!)`, `The regexp of nToken cannot have the 'g' flag.`);
-				throw new Error("The regexp of nToken cannot have the 'g' flag.");
-			}
-			checkers[k] = (pc: ParseContext) => {
-				pattern.lastIndex = pc.i;
-				return !!pc.text().match(pattern);
-			};
-		} else {
-			console.error(`(!)`, `Invalid argument ${k + 1} to 'nToken', pattern`);
-			checkers[k] = (pc: ParseContext) => false;
-		}
-	}
+	const an: Analyzer = token(...patterns);
 	return makeAnalyzer(
 		function _nToken_(pc: ParseContext): AreaNode|null {
-			for (const checker of checkers) {
-				if (checker(pc)) {
-					return null;
-				}
+			const 
+				xpc = {...pc},
+				res = an(xpc);
+			if (res) {
+				return null;
+			} else {
+				return new AreaNode(
+					{
+						__: `nToken(${patterns.map(v => "'"+v.toString()+"'").join(", ")})`,
+						fullText: pc.text,
+						at: [pc.i, pc.i += 1], 
+						ch: [],
+					}
+				);
 			}
-			return new AreaNode(
-				{
-					__: `nToken(${patterns.map(v => "'"+v.toString()+"'").join(", ")})`,
-					fullText: pc.text,
-					at: [pc.i, pc.i += 1], 
-					ch: [],
-				}
-			);
 		}
 	);
 }
@@ -361,7 +341,8 @@ function q (q: Quantity, x: Analyzer, y: Analyzer|null =null): Analyzer {
 			);
 		} else {
 			console.error(`(!)`, `Invalid argument 3 to q`, q, x, y);
-			return makeAnalyzer((pc: ParseContext) => null);
+			throw new Error(`Invalid argument 3 to q`);
+			// return makeAnalyzer((pc: ParseContext) => null);
 		}
 	} else if (q === "*/") {
 		if (y) {
@@ -380,11 +361,13 @@ function q (q: Quantity, x: Analyzer, y: Analyzer|null =null): Analyzer {
 			);
 		} else {
 			console.error(`(!)`, `Invalid argument 3 to q`, q, x, y);
-			return makeAnalyzer((pc: ParseContext) => null);
+			throw new Error(`Invalid argument 3 to q`);
+			// return makeAnalyzer((pc: ParseContext) => null);
 		}
 	} else {
 		console.error(`(!)`, `Invalid arguments to q`, q, x, y);
-		return makeAnalyzer((pc: ParseContext) => null);
+		throw new Error(`Invalid arguments to q`);
+		// return makeAnalyzer((pc: ParseContext) => null);
 	}
 
 	function _many(an: Analyzer, pc: ParseContext)
@@ -462,14 +445,11 @@ function ref(f: () => Analyzer): Analyzer {
 
 function global(globName="", defName="_unrecognized_") {
 	return function (...variants: Analyzer[]): Analyzer {
-		const 
-			analyzer = q('*', 
-				alt(
-					domain(globName, q('+', alt(    ...variants ))),
-					domain(defName , q('+', not(alt(...variants))))
-				)
-			),
-			alter = alt(...variants);
-		return analyzer;
+		return q('*', 
+			alt(
+				domain(globName, q('+', alt(    ...variants ))),
+				domain(defName , q('+', not(alt(...variants))))
+			)
+		);
 	};
 }
