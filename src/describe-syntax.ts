@@ -40,7 +40,8 @@ const
 	)),
 	commentLine = seq(
 		token("//"), 
-		nToken("\n")['*'].merged("comment.content"), 
+		nToken("\n", "\r\n")['*'].merged("comment.content"), 
+		token("\r")['*'], 
 		token("\n")
 	),
 	commentBlock = seq(
