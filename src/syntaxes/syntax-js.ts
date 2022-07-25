@@ -8,7 +8,7 @@ import {
 	not,
 	ref,
 	global,
-} from "./syntax-framework/describeAPI";
+} from "../syntax-framework/describeAPI";
 
 const 
 	re = token(/\/(\\\/|[^\/\n])+\/[migy]{0,4}/y),

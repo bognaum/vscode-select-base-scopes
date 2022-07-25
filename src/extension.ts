@@ -1,5 +1,4 @@
 import * as vsc from 'vscode';
-import main from './describe-syntax';
 import select from './commands.ts/select';
 export function activate(context: vsc.ExtensionContext) {
 	const commands = [

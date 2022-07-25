@@ -1,5 +1,5 @@
 import * as vsc from "vscode";
-import main from '../describe-syntax';
+import main from '../syntaxes/syntax-js';
 
 export default function select(tEditor: vsc.TextEditor, edit: vsc.TextEditorEdit, ...args: any[]) {
 	const 
