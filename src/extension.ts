@@ -1,24 +1,11 @@
 import * as vsc from 'vscode';
 import main from './describe-syntax';
+import select from './commands.ts/select';
 export function activate(context: vsc.ExtensionContext) {
 	const commands = [
 		// vsc.commands.registerCommand('my-command', () => {}),
 		// vsc.commands.registerTextEditorCommand('my-command', (tEditor: vsc.TextEditor, edit: vsc.TextEditorEdit, ...args: any[]) => {}),
-		vsc.commands.registerTextEditorCommand('my-command', (tEditor: vsc.TextEditor, edit: vsc.TextEditorEdit, ...args: any[]) => {
-			console.log("OK");
-			const 
-				doc = tEditor.document,
-				text = doc.getText(),
-				res = main.applyToText(text);
-				console.log(`res >>`, res);
-				if (res) {
-					console.log(`res.namedOnly >>`, res.namedOnly);
-				}
-			/* console.log("OK");
-			console.error(`(!)-USER'S `, `OK`);
-			console.trace(`tEditor >>`, tEditor);
-			throw new Error("Test error"); */
-		}),
+		vsc.commands.registerTextEditorCommand('select-between.select', select),
 	];
 
 	context.subscriptions.push(...commands);

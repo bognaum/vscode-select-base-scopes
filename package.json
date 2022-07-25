@@ -12,14 +12,21 @@
 		"Other"
 	],
 	"activationEvents": [
-        "onCommand:my-command"
+        "onCommand:select-between.select"
 	],
 	"main": "./dist/extension.js",
 	"contributes": {
 		"commands": [
 			{
-				"command": "my-command",
-				"title": "My Command"
+				"command": "select-between.select",
+				"title": "Select between: Select"
+			}
+		],
+		"keybindings": [
+			{
+				"command": "select-between.select",
+				"key": "ctrl+alt+m",
+				"when": "editorTextFocus && !editorReadonly" 
 			}
 		]
 	},
