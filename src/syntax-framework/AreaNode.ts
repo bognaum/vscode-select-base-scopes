@@ -57,7 +57,7 @@ function getNodeStack(model: AreaNode, posA: number, posB=posA): AreaNode[] {
 			stack.push(node);
 			if (node.ch?.length) {
 				for (const ch of node.ch) {
-					const [start, end] = node.at;
+					const [start, end] = ch.at;
 					if (
 						start <= posA && posA < end && 
 						start <= posB && posB < end
@@ -86,7 +86,7 @@ function getDomainNodeStack(model: AreaNode, posA: number, posB=posA): AreaNode[
 			}
 			if (node.ch?.length) {
 				for (const ch of node.ch) {
-					const [start, end] = node.at;
+					const [start, end] = ch.at;
 					if (
 						start <= posA && posA < end && 
 						start <= posB && posB < end
