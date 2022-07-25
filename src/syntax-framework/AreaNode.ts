@@ -51,16 +51,16 @@ function getNodeStack(model: AreaNode, posA: number, posB=posA): AreaNode[] {
 	function recurs(node: AreaNode) {
 		const [start, end] = node.at;
 		if (
-			start <= posA && posA < end && 
-			start <= posB && posB < end
+			start <= posA && posA <= end && 
+			start <= posB && posB <= end
 		) {
 			stack.push(node);
 			if (node.ch?.length) {
 				for (const ch of node.ch) {
 					const [start, end] = ch.at;
 					if (
-						start <= posA && posA < end && 
-						start <= posB && posB < end
+						start <= posA && posA <= end && 
+						start <= posB && posB <= end
 					) {
 						recurs(ch);
 						break;
@@ -78,8 +78,8 @@ function getDomainNodeStack(model: AreaNode, posA: number, posB=posA): AreaNode[
 	function recurs(node: AreaNode) {
 		const [start, end] = node.at;
 		if (
-			start <= posA && posA < end && 
-			start <= posB && posB < end
+			start <= posA && posA <= end && 
+			start <= posB && posB <= end
 		) {
 			if (node.name) {
 				stack.push(node);
@@ -88,8 +88,8 @@ function getDomainNodeStack(model: AreaNode, posA: number, posB=posA): AreaNode[
 				for (const ch of node.ch) {
 					const [start, end] = ch.at;
 					if (
-						start <= posA && posA < end && 
-						start <= posB && posB < end
+						start <= posA && posA <= end && 
+						start <= posB && posB <= end
 					) {
 						recurs(ch);
 						break;
