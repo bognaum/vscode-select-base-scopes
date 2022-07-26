@@ -26,13 +26,13 @@ export default class AreaNode {
 	}
 	get namedOnly  (): AreaNode {return getModelOfNamedOnly(this);}
 	get selfText   (): string {return this.fullText().slice(...this.at);}
-	get "at LC 0.."(): [[number, number], [number, number]] {
+	get "at-LC-0.."(): [[number, number], [number, number]] {
 		return [
 			this.getPointLCFr0(this.at[0]), 
 			this.getPointLCFr0(this.at[1])
 		];
 	}
-	get "at LC 1.."(): [[number, number], [number, number]] {
+	get "at-LC-1.."(): [[number, number], [number, number]] {
 		return [
 			this.getPointLCFr1(this.at[0]), 
 			this.getPointLCFr1(this.at[1])
