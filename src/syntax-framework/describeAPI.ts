@@ -83,20 +83,25 @@ function token (...patterns: (string|RegExp|number)[]): iAnalyzer
 			}
 		} else if (typeof pattern === "string") {
 			const len = pattern.length;
-			checkers[k] = (pc: iParseContext) => {
-				if (pc.text().startsWith(pattern, pc.i)) {
-					return new AreaNode(
-						{
-							__: `token(${patterns.map(v => "'"+v.toString()+"'").join(", ")}); ='${pattern}'`,
-							fullText: pc.text,
-							at: [pc.i, pc.i += len], 
-							ch: []
-						}
-					);
-				} else {
-					return null;
-				}
-			};
+			if (len) {
+				checkers[k] = (pc: iParseContext) => {
+					if (pc.text().startsWith(pattern, pc.i)) {
+						return new AreaNode(
+							{
+								__: `token(${patterns.map(v => "'"+v.toString()+"'").join(", ")}); ='${pattern}'`,
+								fullText: pc.text,
+								at: [pc.i, pc.i += len], 
+								ch: []
+							}
+						);
+					} else {
+						return null;
+					}
+				};
+			} else {
+				console.error(`(!)`, `The string pattern of a token must have the a non-zero length.`);
+				throw new Error("The string pattern of a token must have the a non-zero length.");
+			}
 		} else if (pattern instanceof RegExp) {
 			if (!pattern.sticky) {
 				console.error(`(!)`, `The regexp of token '${pattern.toString()}' must have the 'y' flag.`);
