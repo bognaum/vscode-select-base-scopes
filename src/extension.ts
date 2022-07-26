@@ -11,22 +11,3 @@ export function activate(context: vsc.ExtensionContext) {
 }
 
 export function deactivate() {}
-
-
-interface A {
-	(a: number): number;
-	b: (a: number) => number;
-}
-
-function a(a: number): number {
-	return a;
-}
-
-function b(this: A, a: number): number {
-	const x: A = this;
-	return this(a);
-};
-
-a.b = b;
-
-let x: A = a;
