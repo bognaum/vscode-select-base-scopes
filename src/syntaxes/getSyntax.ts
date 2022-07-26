@@ -1,9 +1,10 @@
-import syntaxJS from "./syntax-js";
+import {Analyzer} from "../syntax-framework/types-interfaces";
+import js from "./syntax-js";
 
 export default getSyntax;
 
-const syntaxes: {[i: string]: any} = {
-	defaultSyntax: syntaxJS,
+const syntaxes: {[i: string]: Assign|Analyzer} = {
+	defaultSyntax: js,
 	js: {
 		applyTo: [
 			"javascript",
@@ -11,17 +12,22 @@ const syntaxes: {[i: string]: any} = {
 			"javascriptreact",
 			"typescript",
 		],
-		syntax: syntaxJS,
+		syntax: js,
 	},
 };
 
-function getSyntax(languageId='') {
+function getSyntax(languageId=''): [Analyzer, string] {
 	if (languageId) {
 		for (const name in syntaxes) {
-			if (syntaxes[name].applyTo?.includes(languageId)) {
-				return [syntaxes[name].syntax, name];
+			if ((syntaxes[name] as Assign).applyTo?.includes(languageId)) {
+				return [(syntaxes[name] as Assign).syntax, name];
 			} else {}
 		}
 	} else {}
-	return [syntaxes.defaultSyntax, "default"];
+	return [syntaxes.defaultSyntax as Analyzer, "default"];
+}
+
+interface Assign {
+	applyTo: string[],
+	syntax: Analyzer
 }
