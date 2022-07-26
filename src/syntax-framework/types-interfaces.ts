@@ -34,7 +34,7 @@ interface Analyzer extends RawAnalyzer {
 	q: (x: Quantity) => Analyzer;
 	as: (x: string) => Analyzer;
 	merged: (x?: string) => Analyzer;
-	applyToText: (text: string) => AreaNode|null;
+	applyToText: (text: string, i?: number) => AreaNode|null;
 	"?": Analyzer;
 	"+": Analyzer;
 	"*": Analyzer;

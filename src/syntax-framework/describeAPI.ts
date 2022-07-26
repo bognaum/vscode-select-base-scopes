@@ -42,11 +42,11 @@ function makeAnalyzer(rAn: RawAnalyzer): Analyzer {
 			}
 		},
 		applyToText: {
-			value: function (text: string): AreaNode|null {
+			value: function (text: string, i=0): AreaNode|null {
 				const startDT = Date.now();
 				const pc: ParseContext = {
 					text: () => text,
-					i: 0
+					i
 				};
 				const res = this(pc);
 
