@@ -27,9 +27,9 @@ export default class AreaNode {
 	get namedOnly  (): AreaNode {return getModelOfNamedOnly(this);}
 	get selfText   (): string {return this.fullText().slice(...this.at);}
 	get atLC       (): [[number, number], [number, number]] {
-		return [this.getPointLC(this.at[0]), this.getPointLC(this.at[1])];
+		return [this.getPointLCFr1(this.at[0]), this.getPointLCFr1(this.at[1])];
 	}
-	getPointLC (offset: number): [number, number] {
+	getPointLCFr1 (offset: number): [number, number] {
 		const
 			lines = this.fullText().slice(0, offset).split("\n"),
 			lastLine = lines[lines.length - 1];
