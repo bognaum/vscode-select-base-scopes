@@ -1,14 +1,14 @@
 import AreaNode from "./AreaNode";
 
 export {
-	IAreaNode,
-	ParseContext,
 	Quantity,
-	RawAnalyzer,
-	Analyzer,
+	iAreaNode,
+	iParseContext,
+	iRawAnalyzer,
+	iAnalyzer,
 };
 
-interface IAreaNode {
+interface iAreaNode {
 	__: string;
 	name?: string;
 	fullText: () => string;
@@ -16,26 +16,25 @@ interface IAreaNode {
 	ch?: AreaNode[];
 }
 
-interface ParseContext {
+interface iParseContext {
 	readonly text: () => string;
 	i: number;
 }
 
 type Quantity = "?"|"+"|"*"|"+/"|"*/";
 
-// type Analyzer = (pc: ParseContext) => IAreaNode|null;
-
-
-interface RawAnalyzer {
-	(pc: ParseContext): AreaNode|null;
+interface iRawAnalyzer {
+	(pc: iParseContext): AreaNode|null;
 }
 
-interface Analyzer extends RawAnalyzer {
-	q: (x: Quantity) => Analyzer;
-	as: (x: string) => Analyzer;
-	merged: (x?: string) => Analyzer;
+// type iAnalyzer = (pc: ParseContext) => IAreaNode|null;
+
+interface iAnalyzer extends iRawAnalyzer {
+	q:           (x: Quantity)              => iAnalyzer;
+	as:          (x: string)                => iAnalyzer;
+	merged:      (x?: string)               => iAnalyzer;
 	applyToText: (text: string, i?: number) => AreaNode|null;
-	"?": Analyzer;
-	"+": Analyzer;
-	"*": Analyzer;
+	"?": iAnalyzer;
+	"+": iAnalyzer;
+	"*": iAnalyzer;
 }

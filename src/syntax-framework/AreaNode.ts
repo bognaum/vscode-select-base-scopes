@@ -1,8 +1,5 @@
 import {
-	IAreaNode,
-	ParseContext,
-	Quantity,
-	Analyzer,
+	iAreaNode,
 } from "./types-interfaces";
 
 export default class AreaNode {
@@ -12,7 +9,7 @@ export default class AreaNode {
 	readonly length: number;
 	readonly ch?: AreaNode[];
 	readonly fullText: () => string;
-	constructor (t: IAreaNode) {
+	constructor (t: iAreaNode) {
 		this.__           = t.__;
 		this.at           = [...t.at];
 		this.length       = t.at[1] - t.at[0];
@@ -112,7 +109,7 @@ function getDomainNodeStack(model: AreaNode, posA: number, posB=posA): AreaNode[
 	}
 }
 
-function getModelOfNamedOnly(model: IAreaNode): AreaNode {
+function getModelOfNamedOnly(model: iAreaNode): AreaNode {
 	const startDT = Date.now();
 	let oldModelNodes = 0, newModelNodes = 0;
 	const res: AreaNode = recurs(model);
@@ -120,11 +117,11 @@ function getModelOfNamedOnly(model: IAreaNode): AreaNode {
 	console.log(`'getModelOfNamedOnly()' perform time: ${performT}mSec.`,"\nOld model nodes:", oldModelNodes, "; New model nodes:", newModelNodes);
 	return res;
 
-	function recurs(node: IAreaNode): AreaNode;
-	function recurs(node: IAreaNode, dept: 0): AreaNode;
-	function recurs(node: IAreaNode, dept: number): AreaNode|AreaNode[];
+	function recurs(node: iAreaNode): AreaNode;
+	function recurs(node: iAreaNode, dept: 0): AreaNode;
+	function recurs(node: iAreaNode, dept: number): AreaNode|AreaNode[];
 
-	function recurs(node: IAreaNode, dept=0): AreaNode|AreaNode[] {
+	function recurs(node: iAreaNode, dept=0): AreaNode|AreaNode[] {
 		oldModelNodes ++;
 		const children: AreaNode[] = [];
 		if (node.ch?.length) {

@@ -1,9 +1,9 @@
 import {
-	IAreaNode,
-	ParseContext,
+	iAreaNode,
+	iParseContext,
 	Quantity,
-	RawAnalyzer,
-	Analyzer,
+	iRawAnalyzer,
+	iAnalyzer,
 } from "./types-interfaces";
 
 import AreaNode from "./AreaNode";
@@ -21,30 +21,30 @@ export {
 	global,
 };
 
-function makeAnalyzer(rAn: RawAnalyzer): Analyzer {
+function makeAnalyzer(rAn: iRawAnalyzer): iAnalyzer {
 	Object.defineProperties(rAn, {
 		"?": {get: function() {return q("?", this)}},
 		"+": {get: function() {return q("+", this)}},
 		"*": {get: function() {return q("*", this)}},
 		q: {
-			value: function (quantity: Quantity): Analyzer {
+			value: function (quantity: Quantity): iAnalyzer {
 				return q(quantity, this);
 			}
 		},
 		as: {
-			value: function (name: string): Analyzer {
+			value: function (name: string): iAnalyzer {
 				return domain(name, this);
 			}
 		},
 		merged: {
-			value: function (name: string =""): Analyzer {
+			value: function (name: string =""): iAnalyzer {
 				return merge(this, name);
 			}
 		},
 		applyToText: {
 			value: function (text: string, i=0): AreaNode|null {
 				const startDT = Date.now();
-				const pc: ParseContext = {
+				const pc: iParseContext = {
 					text: () => text,
 					i
 				};
@@ -56,18 +56,18 @@ function makeAnalyzer(rAn: RawAnalyzer): Analyzer {
 			}
 		},
 	});
-	return rAn as Analyzer;
+	return rAn as iAnalyzer;
 }
 
-function token (...patterns: (string|RegExp|number)[]): Analyzer 
+function token (...patterns: (string|RegExp|number)[]): iAnalyzer 
 {
-	const checkers: ((pc: ParseContext) => AreaNode|null)[] = [];
+	const checkers: ((pc: iParseContext) => AreaNode|null)[] = [];
 	
 	for (const [k, pattern] of patterns.entries()) {
 		if (typeof pattern === "number") {
 			if (0 < pattern) {
 				const len = pattern;
-				checkers[k] = (pc: ParseContext) => {
+				checkers[k] = (pc: iParseContext) => {
 					return new AreaNode(
 						{
 							__: `token(${patterns.map(v => "'"+v.toString()+"'").join(", ")}); ='${pattern}'`,
@@ -83,7 +83,7 @@ function token (...patterns: (string|RegExp|number)[]): Analyzer
 			}
 		} else if (typeof pattern === "string") {
 			const len = pattern.length;
-			checkers[k] = (pc: ParseContext) => {
+			checkers[k] = (pc: iParseContext) => {
 				if (pc.text().startsWith(pattern, pc.i)) {
 					return new AreaNode(
 						{
@@ -106,7 +106,7 @@ function token (...patterns: (string|RegExp|number)[]): Analyzer
 				console.error(`(!)`, `The regexp of token cannot have the 'g' flag.`);
 				throw new Error("The regexp of token cannot have the 'g' flag.");
 			}
-			checkers[k] = (pc: ParseContext) => {
+			checkers[k] = (pc: iParseContext) => {
 				pattern.lastIndex = pc.i;
 				const m = pc.text().match(pattern);
 				if (m) {
@@ -124,11 +124,11 @@ function token (...patterns: (string|RegExp|number)[]): Analyzer
 			};
 		} else {
 			console.error(`(!)`, `Invalid argument ${k + 1} to 'nToken', pattern`);
-			checkers[k] = (pc: ParseContext) => null;
+			checkers[k] = (pc: iParseContext) => null;
 		}
 	}
 	return makeAnalyzer(
-		function _token_(pc: ParseContext): AreaNode|null {
+		function _token_(pc: iParseContext): AreaNode|null {
 			for (const checker of checkers) {
 				const m = checker(pc);
 				if (m) {
@@ -140,9 +140,9 @@ function token (...patterns: (string|RegExp|number)[]): Analyzer
 	);
 }
 
-function merge(an: Analyzer, name: string =""): Analyzer  {
+function merge(an: iAnalyzer, name: string =""): iAnalyzer  {
 	return makeAnalyzer(
-		function _merge_(pc: ParseContext): AreaNode|null {
+		function _merge_(pc: iParseContext): AreaNode|null {
 			const 
 				i0 = pc.i,
 				res = an(pc);
@@ -163,11 +163,11 @@ function merge(an: Analyzer, name: string =""): Analyzer  {
 	);
 }
 
-function nToken (...patterns: (string|RegExp)[]): Analyzer 
+function nToken (...patterns: (string|RegExp)[]): iAnalyzer 
 {
-	const an: Analyzer = token(...patterns);
+	const an: iAnalyzer = token(...patterns);
 	return makeAnalyzer(
-		function _nToken_(pc: ParseContext): AreaNode|null {
+		function _nToken_(pc: iParseContext): AreaNode|null {
 			const 
 				xpc = {...pc},
 				res = an(xpc);
@@ -187,10 +187,10 @@ function nToken (...patterns: (string|RegExp)[]): Analyzer
 	);
 }
 
-function domain (name: string, x: Analyzer): Analyzer
+function domain (name: string, x: iAnalyzer): iAnalyzer
 {
 	return makeAnalyzer(
-		function _domain_(pc: ParseContext): AreaNode|null 
+		function _domain_(pc: iParseContext): AreaNode|null 
 		{
 			const node = x(pc);
 			if (node) {
@@ -210,9 +210,9 @@ function domain (name: string, x: Analyzer): Analyzer
 	);
 }
 
-function seq (...args: Analyzer[]): Analyzer  {
+function seq (...args: iAnalyzer[]): iAnalyzer  {
 	return makeAnalyzer(
-		function _seq_(pc: ParseContext): AreaNode|null {
+		function _seq_(pc: iParseContext): AreaNode|null {
 			const 
 				xpc = {...pc},
 				i0 = pc.i,
@@ -243,9 +243,9 @@ function seq (...args: Analyzer[]): Analyzer  {
 		}
 	);
 }
-function alt (...args: Analyzer[]): Analyzer  {
+function alt (...args: iAnalyzer[]): iAnalyzer  {
 	return makeAnalyzer(
-		function _alt_(pc: ParseContext): AreaNode|null {
+		function _alt_(pc: iParseContext): AreaNode|null {
 			for (const [k, analyzer] of args.entries()) {
 				const 
 					xpc = {...pc},
@@ -267,10 +267,10 @@ function alt (...args: Analyzer[]): Analyzer  {
 		}
 	);
 }
-function q (q: Quantity, x: Analyzer, y: Analyzer|null =null): Analyzer {
+function q (q: Quantity, x: iAnalyzer, y: iAnalyzer|null =null): iAnalyzer {
 	if (q === "?" ) {
 		return makeAnalyzer(
-			function _zeroOrOne_(pc: ParseContext): AreaNode {
+			function _zeroOrOne_(pc: iParseContext): AreaNode {
 				const res = x(pc);
 				if (res) {
 					return new AreaNode(
@@ -295,7 +295,7 @@ function q (q: Quantity, x: Analyzer, y: Analyzer|null =null): Analyzer {
 		);
 	} else if (q === "+" ) {
 		return makeAnalyzer(
-			function _oneOrMany_(pc: ParseContext): AreaNode|null {
+			function _oneOrMany_(pc: iParseContext): AreaNode|null {
 				const [results, at] = _many(x, pc);
 				if (results.length) {
 					return new AreaNode(
@@ -313,7 +313,7 @@ function q (q: Quantity, x: Analyzer, y: Analyzer|null =null): Analyzer {
 		);
 	} else if (q === "*" ) {
 		return makeAnalyzer(
-			function _zeroOrMany_(pc: ParseContext): AreaNode|null {
+			function _zeroOrMany_(pc: iParseContext): AreaNode|null {
 				const [results, at] = _many(x, pc);
 				return new AreaNode(
 					{
@@ -328,7 +328,7 @@ function q (q: Quantity, x: Analyzer, y: Analyzer|null =null): Analyzer {
 	} else if (q === "+/") {
 		if (y) {
 			return makeAnalyzer(
-				function _oneOrManySeparate_(pc: ParseContext): AreaNode|null {
+				function _oneOrManySeparate_(pc: iParseContext): AreaNode|null {
 					const [results, at] = _manySep(x, pc, y);
 					if (results.length) {
 						return new AreaNode(
@@ -347,12 +347,12 @@ function q (q: Quantity, x: Analyzer, y: Analyzer|null =null): Analyzer {
 		} else {
 			console.error(`(!)`, `Invalid argument 3 to q`, q, x, y);
 			throw new Error(`Invalid argument 3 to q`);
-			// return makeAnalyzer((pc: ParseContext) => null);
+			// return makeAnalyzer((pc: iParseContext) => null);
 		}
 	} else if (q === "*/") {
 		if (y) {
 			return makeAnalyzer(
-				function _zeroOrManySeparate_(pc: ParseContext): AreaNode|null {
+				function _zeroOrManySeparate_(pc: iParseContext): AreaNode|null {
 					const [results, at] = _manySep(x, pc, y);
 					return new AreaNode(
 						{
@@ -367,15 +367,15 @@ function q (q: Quantity, x: Analyzer, y: Analyzer|null =null): Analyzer {
 		} else {
 			console.error(`(!)`, `Invalid argument 3 to q`, q, x, y);
 			throw new Error(`Invalid argument 3 to q`);
-			// return makeAnalyzer((pc: ParseContext) => null);
+			// return makeAnalyzer((pc: iParseContext) => null);
 		}
 	} else {
 		console.error(`(!)`, `Invalid arguments to q`, q, x, y);
 		throw new Error(`Invalid arguments to q`);
-		// return makeAnalyzer((pc: ParseContext) => null);
+		// return makeAnalyzer((pc: iParseContext) => null);
 	}
 
-	function _many(an: Analyzer, pc: ParseContext)
+	function _many(an: iAnalyzer, pc: iParseContext)
 	: [AreaNode[], [number, number]] 
 	{
 		const 
@@ -391,7 +391,7 @@ function q (q: Quantity, x: Analyzer, y: Analyzer|null =null): Analyzer {
 		return [results, [i0, pc.i]];
 	}
 
-	function _manySep(an1: Analyzer, pc: ParseContext, an2: Analyzer)
+	function _manySep(an1: iAnalyzer, pc: iParseContext, an2: iAnalyzer)
 	: [AreaNode[], [number, number]] 
 	{
 		const 
@@ -413,14 +413,14 @@ function q (q: Quantity, x: Analyzer, y: Analyzer|null =null): Analyzer {
 		pc.i = xpc.i;
 		return [results, [i0, xpc.i]];
 	}
-	function _len(node: IAreaNode): number {
+	function _len(node: iAreaNode): number {
 		const len = node.at[1] - node.at[0];
 		return len;
 	}
 }
-function not(x: Analyzer): Analyzer {
+function not(x: iAnalyzer): iAnalyzer {
 	return makeAnalyzer(
-		function _not_(pc: ParseContext): AreaNode|null {
+		function _not_(pc: iParseContext): AreaNode|null {
 			const 
 				xpc = {...pc},
 				res = x(xpc);
@@ -440,16 +440,16 @@ function not(x: Analyzer): Analyzer {
 		}
 	);
 }
-function ref(f: () => Analyzer): Analyzer {
+function ref(f: () => iAnalyzer): iAnalyzer {
 	return makeAnalyzer(
-		function _ref_(pc: ParseContext): AreaNode|null {
+		function _ref_(pc: iParseContext): AreaNode|null {
 			return f()(pc);
 		}
 	);
 }
 
 function global(globName="", defName="_unrecognized_") {
-	return function (...variants: Analyzer[]): Analyzer {
+	return function (...variants: iAnalyzer[]): iAnalyzer {
 		return q('*', 
 			alt(
 				domain(globName, q('+', alt(    ...variants ))),

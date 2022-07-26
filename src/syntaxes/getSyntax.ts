@@ -1,9 +1,9 @@
-import {Analyzer} from "../syntax-framework/types-interfaces";
+import {iAnalyzer} from "../syntax-framework/types-interfaces";
 import js from "./syntax-js";
 
 export default getSyntax;
 
-const syntaxes: {[i: string]: Assign|Analyzer} = {
+const syntaxes: {[i: string]: Assign|iAnalyzer} = {
 	defaultSyntax: js,
 	js: {
 		applyTo: [
@@ -16,7 +16,7 @@ const syntaxes: {[i: string]: Assign|Analyzer} = {
 	},
 };
 
-function getSyntax(languageId=''): [Analyzer, string] {
+function getSyntax(languageId=''): [iAnalyzer, string] {
 	if (languageId) {
 		for (const name in syntaxes) {
 			if ((syntaxes[name] as Assign).applyTo?.includes(languageId)) {
@@ -24,10 +24,10 @@ function getSyntax(languageId=''): [Analyzer, string] {
 			} else {}
 		}
 	} else {}
-	return [syntaxes.defaultSyntax as Analyzer, "default"];
+	return [syntaxes.defaultSyntax as iAnalyzer, "default"];
 }
 
 interface Assign {
 	applyTo: string[],
-	syntax: Analyzer
+	syntax: iAnalyzer
 }
