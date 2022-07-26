@@ -26,8 +26,20 @@ export default class AreaNode {
 	}
 	get namedOnly  (): AreaNode {return getModelOfNamedOnly(this);}
 	get selfText   (): string {return this.fullText().slice(...this.at);}
-	get atLC       (): [[number, number], [number, number]] {
-		return [this.getPointLCFr1(this.at[0]), this.getPointLCFr1(this.at[1])];
+	get "at LC 0.."(): [[number, number], [number, number]] {
+		return [
+			this.getPointLCFr0(this.at[0]), 
+			this.getPointLCFr0(this.at[1])
+		];
+	}
+	get "at LC 1.."(): [[number, number], [number, number]] {
+		return [
+			this.getPointLCFr1(this.at[0]), 
+			this.getPointLCFr1(this.at[1])
+		];
+	}
+	getPointLCFr0 (offset: number): [number, number] {
+		return (this.getPointLCFr1(offset).map(v => v-1) as [number, number]);
 	}
 	getPointLCFr1 (offset: number): [number, number] {
 		const
