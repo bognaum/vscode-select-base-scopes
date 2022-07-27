@@ -1,6 +1,5 @@
 import {iAnalyzer} from "../syntax-framework/types-interfaces";
 import js from "./syntax-js";
-import json from "./syntax-json";
 
 export default getSyntax;
 
