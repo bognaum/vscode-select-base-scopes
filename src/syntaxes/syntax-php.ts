@@ -19,12 +19,12 @@ const
 		token("<?"),
 		token("php")['?'],
 	),
-	phpEnd = (
-		alt(
-			token("?>"), 
-			eof()
-		)
-	),
+	phpEnd = alt(
+		token("?>"), 
+		eof()
+	);
+
+const
 	phpCommentLine = seq(
 		token("//"), 
 		nToken("\n", "\r\n")['*'].merged("comment.content"), 
@@ -36,12 +36,16 @@ const
 		nToken("*/")['*'].merged("comment.content"),
 		token("*/")
 	).as("comment.block"),
-	phpComment = alt(phpCommentLine, phpCommentBlock),
+	phpComment = alt(phpCommentLine, phpCommentBlock);
+
+const
 	commentHtml = seq(
 		token("<!--"),
 		nToken("-->")['*'].as("comment.inner"),
 		token("-->")
-	).as("comment"),
+	).as("comment");
+
+const
 	string = domain("string", alt(
 		seq(
 			token("'"),
@@ -53,7 +57,9 @@ const
 			nToken('"')['*'].as("string.content"),
 			token('"'),
 		),
-	)),
+	));
+
+const
 	parenRound = seq(
 		token("("),
 		alt(
@@ -85,7 +91,9 @@ const
 		not(phpEnd),
 		ref(() => html),
 	),
-	parentheses = alt(parenRound, parenCurly, parenSquare).as("paren"),
+	parentheses = alt(parenRound, parenCurly, parenSquare).as("paren");
+
+const
 	phpSubjects = alt(
 		phpComment,
 		string,
