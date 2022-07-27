@@ -21,8 +21,9 @@ export {
 	ref,
 	bof,
 	eof,
-	global,
+	lookForward,
 	log,
+	global,
 };
 
 function makeAnalyzer(rAn: iRawAnalyzer): iAnalyzer {
@@ -43,6 +44,11 @@ function makeAnalyzer(rAn: iRawAnalyzer): iAnalyzer {
 		merged: {
 			value: function (name: string =""): iAnalyzer {
 				return merge(this, name);
+			}
+		},
+		before: {
+			value: function (nextAn: iAnalyzer): iAnalyzer {
+				return lookForward(this, nextAn);
 			}
 		},
 		applyToText: {
@@ -507,6 +513,22 @@ function eof():iAnalyzer {
 					fullText: pc.text,
 					at: [pc.i, pc.i],
 					ch: [],
+				});
+			} else {
+				return null;
+			}
+		}
+	);
+}
+function lookForward(actualAn: iAnalyzer, nextAn: iAnalyzer): iAnalyzer {
+	const both = seq(actualAn, nextAn);
+	return makeAnalyzer(
+		function _lookForward_(pc: iParseContext): AreaNode|null {
+			const xpc = {...pc};
+			if (both(xpc)) {
+				return new AreaNode({
+					...actualAn(pc) as AreaNode,
+					__: "lookForward()",
 				});
 			} else {
 				return null;
