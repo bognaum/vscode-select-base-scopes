@@ -12,7 +12,7 @@ import {
 const startDT = Date.now();
 
 const 
-	re = token(/\/(\\\/|[^\/\n])+\/[migy]{0,4}/y),
+	re = token(/\/(\\\/|[^\/\n])+\/[migy]{0,4}/y).as("regexp"),
 	slashed = seq(token("\\"), token(1)),
 	stringTag = domain("string.tag", seq(
 		token("${"),
