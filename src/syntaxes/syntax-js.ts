@@ -92,15 +92,7 @@ const
 	);
 
 const endDT = Date.now(), performT = (endDT - startDT);
-console.log(`'syntax-js' perform time: ${performT}mSec`);
+console.log(`'syntax-js' perform time: ${performT} ms`);
 
-export default glob.log("js glob");
-
-// console.log("1", stringTag.applyToText("${el.scrollHeight}")?.namedOnly);
-// console.log("1.1", stringTag.applyToText("${}")?.namedOnly);
-// console.log("1.2", alt(mainScopeSubjects, token(1)).applyToText("el.scrollHeight")?.namedOnly);
-// console.log("2", string.applyToText("'${el.scrollHeight}'")?.namedOnly);
-/* console.log("3", paren.applyToText(
-	'(translate(el, "width" , ["0", `${el.scrollWidth }px`, ""], showW),)'
-	// 'translate(el, "width" , ["0", `${el.scrollWidth }px`, ""], showW),'
-)?.namedOnly); */
+// export default glob.log("js glob");
+export default glob;

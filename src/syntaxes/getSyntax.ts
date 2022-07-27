@@ -9,15 +9,11 @@ const syntaxes: {[i: string]: Assign|iAnalyzer} = {
 	js: {
 		applyTo: [
 			"javascript",
-			// "json",
+			"json",
 			"javascriptreact",
 			"typescript",
 		],
 		syntax: js,
-	},
-	json: {
-		applyTo: ["json", "jsonc"],
-		syntax: json,
 	},
 };
 
