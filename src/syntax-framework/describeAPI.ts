@@ -519,15 +519,18 @@ function log(an: iAnalyzer, name=''): iAnalyzer {
 	return makeAnalyzer(
 		function _log_(pc: iParseContext) {
 			const
+				t0 = Date.now(),
 				i0 = pc.i, 
 				[l0, c0] = _getPointLCFr1(pc.text(), pc.i);
 			console.log("(..", an.name.padEnd(15), name.padEnd(15), `${i0}[${l0}:${c0}]`);
 			const res = an(pc);
 			const 
+				t1 = Date.now(),
+				dT = t1 - t0,
 				i1 = pc.i,
 				[l1, c1] = _getPointLCFr1(pc.text(), pc.i);
 			console.log("..)", an.name.padEnd(15), name.padEnd(15), 
-				`${i0}[${l0}:${c0}] - ${i1}[${l1}:${c1}]`);
+				`${i0}[${l0}:${c0}] - ${i1}[${l1}:${c1}]; ${dT}ms`);
 			console.log("==>", res);
 			return res;
 		}
