@@ -30,7 +30,7 @@ interface iRawAnalyzer {
 // type iAnalyzer = (pc: ParseContext) => IAreaNode|null;
 
 interface iAnalyzer extends iRawAnalyzer {
-	q:           (x: Quantity)              => iAnalyzer;
+	q:           (x: Quantity, an?: iAnalyzer) => iAnalyzer;
 	as:          (x: string)                => iAnalyzer;
 	merged:      (x?: string)               => iAnalyzer;
 	applyToText: (text: string, i?: number) => AreaNode|null;

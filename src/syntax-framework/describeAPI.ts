@@ -32,8 +32,8 @@ function makeAnalyzer(rAn: iRawAnalyzer): iAnalyzer {
 		"+": {get: function() {return q("+", this)}},
 		"*": {get: function() {return q("*", this)}},
 		q: {
-			value: function (quantity: Quantity): iAnalyzer {
-				return q(quantity, this);
+			value: function (quantity: Quantity, sep?: iAnalyzer): iAnalyzer {
+				return q(quantity, this, sep);
 			}
 		},
 		as: {
