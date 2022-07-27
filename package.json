@@ -2,6 +2,10 @@
   "name": "select-between",
 	"displayName": "Select between",
 	"description": "Select between brackets and quotes.",
+	"repository": {
+		"type": "git",
+		"url": "git@github.com:bognaum/vscode-select-between.git"
+	},
 	"publisher": "Bognaum",
 	"icon": "IMG/icon-03.png",
 	"version": "0.0.1",
