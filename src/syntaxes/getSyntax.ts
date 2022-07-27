@@ -1,5 +1,6 @@
 import {iAnalyzer} from "../syntax-framework/types-interfaces";
 import js from "./syntax-js";
+import php from "./syntax-php";
 
 export default getSyntax;
 
@@ -13,6 +14,10 @@ const syntaxes: {[i: string]: Assign|iAnalyzer} = {
 			"typescript",
 		],
 		syntax: js,
+	},
+	php: {
+		applyTo: ["php"],
+		syntax: php,
 	},
 };
 
