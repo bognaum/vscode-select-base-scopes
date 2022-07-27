@@ -34,6 +34,7 @@ interface iAnalyzer extends iRawAnalyzer {
 	as:          (x: string)                => iAnalyzer;
 	merged:      (x?: string)               => iAnalyzer;
 	applyToText: (text: string, i?: number) => AreaNode|null;
+	log:         (text: string, i?: number) => iAnalyzer;
 	"?": iAnalyzer;
 	"+": iAnalyzer;
 	"*": iAnalyzer;

@@ -22,6 +22,7 @@ export {
 	bof,
 	eof,
 	global,
+	log,
 };
 
 function makeAnalyzer(rAn: iRawAnalyzer): iAnalyzer {
@@ -56,6 +57,11 @@ function makeAnalyzer(rAn: iRawAnalyzer): iAnalyzer {
 				const endDT = Date.now(), performT = (endDT - startDT);
 				console.log(`'applyToText()' perform time: ${performT}mSec`);
 				return res;
+			}
+		},
+		log: {
+			value: function (name=''): iAnalyzer {
+				return log(this, name);
 			}
 		},
 	});
@@ -507,6 +513,31 @@ function eof():iAnalyzer {
 			}
 		}
 	);
+}
+
+function log(an: iAnalyzer, name=''): iAnalyzer {
+	return makeAnalyzer(
+		function _log_(pc: iParseContext) {
+			const
+				i0 = pc.i, 
+				[l0, c0] = _getPointLCFr1(pc.text(), pc.i);
+			console.log("(..", an.name.padEnd(15), name.padEnd(15), `${i0}[${l0}:${c0}]`);
+			const res = an(pc);
+			const 
+				i1 = pc.i,
+				[l1, c1] = _getPointLCFr1(pc.text(), pc.i);
+			console.log("..)", an.name.padEnd(15), name.padEnd(15), 
+				`${i0}[${l0}:${c0}] - ${i1}[${l1}:${c1}]`);
+			console.log("==>", res);
+			return res;
+		}
+	);
+	function _getPointLCFr1 (text: String, offset: number): [number, number] {
+		const
+			lines = text.slice(0, offset).split("\n"),
+			lastLine = lines[lines.length - 1];
+		return [lines.length, lastLine.length + 1];
+	}
 }
 
 function global(globName="", defName="_unrecognized_") {
