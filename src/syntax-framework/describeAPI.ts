@@ -18,6 +18,8 @@ export {
 	not,
 	merge,
 	ref,
+	bof,
+	eof,
 	global,
 };
 
@@ -449,6 +451,38 @@ function ref(f: () => iAnalyzer): iAnalyzer {
 	return makeAnalyzer(
 		function _ref_(pc: iParseContext): AreaNode|null {
 			return f()(pc);
+		}
+	);
+}
+function bof(): iAnalyzer {
+	return makeAnalyzer (
+		function _bof_(pc: iParseContext): AreaNode|null {
+			if (pc.i === 0) {
+				return new AreaNode({
+					__: "bof()",
+					fullText: pc.text,
+					at: [0, 0],
+					ch: [],
+				});
+			} else {
+				return null;
+			}
+		}
+	);
+}
+function eof():iAnalyzer {
+	return makeAnalyzer(
+		function _eof_(pc: iParseContext): AreaNode|null {
+			if (pc.text().length <= pc.i) {
+				return new AreaNode({
+					__: "eof()",
+					fullText: pc.text,
+					at: [pc.i, pc.i],
+					ch: [],
+				});
+			} else {
+				return null;
+			}
 		}
 	);
 }
