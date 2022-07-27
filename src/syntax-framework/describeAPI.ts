@@ -53,15 +53,11 @@ function makeAnalyzer(rAn: iRawAnalyzer): iAnalyzer {
 		},
 		applyToText: {
 			value: function (text: string, i=0): AreaNode|null {
-				const startDT = Date.now();
 				const pc: iParseContext = {
 					text: () => text,
 					i
 				};
 				const res = this(pc);
-
-				const endDT = Date.now(), performT = (endDT - startDT);
-				console.log(`'applyToText()' perform time: ${performT}mSec`);
 				return res;
 			}
 		},

@@ -114,7 +114,7 @@ function getModelOfNamedOnly(model: iAreaNode): AreaNode {
 	let oldModelNodes = 0, newModelNodes = 0;
 	const res: AreaNode = recurs(model);
 	const endDT = Date.now(), performT = (endDT - startDT);
-	console.log(`'getModelOfNamedOnly()' perform time: ${performT}mSec.`,"\nOld model nodes:", oldModelNodes, "; New model nodes:", newModelNodes);
+	console.log(`'getModelOfNamedOnly()' perform time: ${performT} ms.`,"Nodes:", oldModelNodes, "/", newModelNodes);
 	return res;
 
 	function recurs(node: iAreaNode): AreaNode;

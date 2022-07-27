@@ -94,7 +94,7 @@ const
 const endDT = Date.now(), performT = (endDT - startDT);
 console.log(`'syntax-js' perform time: ${performT}mSec`);
 
-export default glob;
+export default glob.log("js glob");
 
 // console.log("1", stringTag.applyToText("${el.scrollHeight}")?.namedOnly);
 // console.log("1.1", stringTag.applyToText("${}")?.namedOnly);

@@ -26,9 +26,6 @@ export default function select(tEditor: vsc.TextEditor, edit: vsc.TextEditorEdit
 					endOffset = doc.offsetAt(sel.end),
 					scopeStack = model.getNodeStack(startOffset, endOffset);
 
-				// console.log(`startOffset, endOffset >>`, startOffset, endOffset);
-				// console.log(`scopeStack >>`, scopeStack);
-
 				let i = 0, node, newSel = sel;
 				while (node = last(scopeStack, i ++)) {
 					const [nodeStart, nodeEnd] = node.at;
