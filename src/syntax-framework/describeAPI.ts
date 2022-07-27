@@ -16,6 +16,7 @@ export {
 	alt,
 	q,
 	not,
+	noOne,
 	merge,
 	ref,
 	bof,
@@ -444,6 +445,27 @@ function not(x: iAnalyzer): iAnalyzer {
 					},
 				);
 			}
+		}
+	);
+}
+function noOne(...args: iAnalyzer[]): iAnalyzer {
+	return makeAnalyzer(
+		function _noOne_(pc: iParseContext): AreaNode|null {
+			const xpc = {...pc};
+			for (const [k, an]of args.entries()) {
+				if (an(xpc)) {
+					return null;
+				} else {}
+			}
+			pc.i++;
+			return new AreaNode(
+				{
+					__: `noOne(${args.length})`,
+					fullText: pc.text,
+					at: [pc.i - 1, pc.i],
+					ch: [],
+				},
+			);
 		}
 	);
 }
