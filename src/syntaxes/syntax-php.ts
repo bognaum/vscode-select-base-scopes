@@ -57,7 +57,8 @@ const
 	parenRound = seq(
 		token("("),
 		alt(
-			ref(() => parenContent),
+			string,
+			ref(() => parentheses),
 			nToken(")"),
 		)['*'].as("paren.content"),
 		token(")"),
@@ -79,9 +80,8 @@ const
 		token("]"),
 	),
 	parenContent = alt(
-		parenRound,
-		parenCurly,
-		parenSquare,
+		string,
+		ref(() => parentheses),
 		not(phpEnd),
 		ref(() => html),
 	),
@@ -100,7 +100,7 @@ const
 				phpSubjects,
 				phpEnd,
 			),
-		)['*'],
+		)['*'].as("php.content"),
 		phpEnd,
 	).as("php"),
 	htmlSubjects = alt(
@@ -116,8 +116,8 @@ const
 		)
 	)['*'].as("html"),
 	main = alt(
-		php.log("php"),
-		html.log("html"),
+		php,
+		html,
 	)['*'];
 
 const endDT = Date.now(), performT = (endDT - startDT);
