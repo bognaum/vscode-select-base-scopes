@@ -3,7 +3,7 @@
 	"displayName": "Select between",
 	"description": "Select between brackets and quotes.",
 	"publisher": "Bognaum",
-	"icon": "IMG/icon-02.png",
+	"icon": "IMG/icon-03.png",
 	"version": "0.0.1",
 	"engines": {
 		"vscode": "^1.69.0"
