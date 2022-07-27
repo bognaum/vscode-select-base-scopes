@@ -515,24 +515,30 @@ function eof():iAnalyzer {
 	);
 }
 
-function log(an: iAnalyzer, name=''): iAnalyzer {
+function log(an: iAnalyzer, name='', range: [number, number] =[0,0]): iAnalyzer {
 	return makeAnalyzer(
 		function _log_(pc: iParseContext) {
-			const
-				t0 = Date.now(),
-				i0 = pc.i, 
-				[l0, c0] = _getPointLCFr1(pc.text(), pc.i);
-			console.log("(..", an.name.padEnd(15), name.padEnd(15), `${i0}[${l0}:${c0}]`);
-			const res = an(pc);
-			const 
-				t1 = Date.now(),
-				dT = t1 - t0,
-				i1 = pc.i,
-				[l1, c1] = _getPointLCFr1(pc.text(), pc.i);
-			console.log("..)", an.name.padEnd(15), name.padEnd(15), 
-				`${i0}[${l0}:${c0}] - ${i1}[${l1}:${c1}]; ${dT}ms`);
-			console.log("==>", res);
-			return res;
+			range[1] |= pc.text().length;
+			if (range[0] <= pc.i && pc.i <= range[1]) {
+				const
+					t0 = Date.now(),
+					i0 = pc.i, 
+					[l0, c0] = _getPointLCFr1(pc.text(), pc.i);
+				console.log("(..", an.name.padEnd(15), name.padEnd(15), `${i0}[${l0}:${c0}]`);
+				const res = an(pc);
+				const 
+					t1 = Date.now(),
+					dT = t1 - t0,
+					i1 = pc.i,
+					[l1, c1] = _getPointLCFr1(pc.text(), pc.i);
+				console.log("..)", an.name.padEnd(15), name.padEnd(15), 
+					`${i0}[${l0}:${c0}] - ${i1}[${l1}:${c1}]; ${dT}ms`);
+				console.log("==>", res);
+				return res;
+			} else {
+				return an(pc);
+			}
+			
 		}
 	);
 	function _getPointLCFr1 (text: String, offset: number): [number, number] {
