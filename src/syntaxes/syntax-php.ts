@@ -29,7 +29,7 @@ const
 		token("//"), 
 		nToken("\n", "\r\n")['*'].merged("comment.content"), 
 		token("\r")['*'], 
-		token("\n")
+		token("\n", "?>")
 	).as("comment.line"),
 	phpCommentBlock = seq(
 		token("/*"),

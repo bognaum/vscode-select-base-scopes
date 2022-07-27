@@ -1,6 +1,6 @@
 import {iAnalyzer} from "../syntax-framework/types-interfaces";
 import js from "./syntax-js";
-import php from "./syntax-php";
+import json from "./syntax-json";
 
 export default getSyntax;
 
@@ -9,15 +9,15 @@ const syntaxes: {[i: string]: Assign|iAnalyzer} = {
 	js: {
 		applyTo: [
 			"javascript",
-			"json",
+			// "json",
 			"javascriptreact",
 			"typescript",
 		],
 		syntax: js,
 	},
-	php: {
-		applyTo: ["php"],
-		syntax: php,
+	json: {
+		applyTo: ["json", "jsonc"],
+		syntax: json,
 	},
 };
 
