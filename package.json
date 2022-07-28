@@ -1,10 +1,10 @@
 {
-  "name": "select-between",
-	"displayName": "Select between",
-	"description": "Select between brackets and quotes.",
+  "name": "select-base-scopes",
+	"displayName": "Select base scopes",
+	"description": "Select between brackets, quotes and comments.",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/bognaum/vscode-select-between.git"
+		"url": "https://github.com/bognaum/vscode-select-base-scopes.git"
 	},
 	"publisher": "Bognaum",
 	"icon": "IMG/icon-03.png",
@@ -16,19 +16,19 @@
 		"Other"
 	],
 	"activationEvents": [
-        "onCommand:select-between.select"
+        "onCommand:select-base-scopes.select"
 	],
 	"main": "./dist/extension.js",
 	"contributes": {
 		"commands": [
 			{
-				"command": "select-between.select",
-				"title": "Select between: Select"
+				"command": "select-base-scopes.select",
+				"title": "Select base scopes: Select"
 			}
 		],
 		"keybindings": [
 			{
-				"command": "select-between.select",
+				"command": "select-base-scopes.select",
 				"key": "ctrl+alt+m",
 				"when": "editorTextFocus && !editorReadonly" 
 			}

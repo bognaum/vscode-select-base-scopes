@@ -4,7 +4,7 @@ export function activate(context: vsc.ExtensionContext) {
 	const commands = [
 		// vsc.commands.registerCommand('my-command', () => {}),
 		// vsc.commands.registerTextEditorCommand('my-command', (tEditor: vsc.TextEditor, edit: vsc.TextEditorEdit, ...args: any[]) => {}),
-		vsc.commands.registerTextEditorCommand('select-between.select', select),
+		vsc.commands.registerTextEditorCommand('select-base-scopes.select', select),
 	];
 
 	context.subscriptions.push(...commands);

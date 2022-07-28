@@ -1,5 +1,16 @@
-# Select between
+# Select base scopes
 
-Select between brackets and quotes.
+This extension recognizes the base scopes of text, like:
+- strings,
+- brackets,
+- comments,
+- regular expressions
+- ect.
 
-```Ctrl+Alt+m``` - select-between.select
+In most languages, these areas have the same syntax. Therefore, the expansion determines them by the same syntactic rules.
+
+## Commands & keybindings
+
+| Keybinding                                  | command                                      |
+| ------------------------------------------- | -------------------------------------------- |
+| <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>M</kbd> | ```select-base-scopes.select``` <br/> Select |
