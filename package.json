@@ -1,7 +1,7 @@
 {
   "name": "select-base-scopes",
 	"displayName": "Select base scopes",
-	"description": "Select between brackets, quotes and comments.",
+	"description": "Select the base scopes of any language, like strings, brackets, etc.",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/bognaum/vscode-select-base-scopes.git"
